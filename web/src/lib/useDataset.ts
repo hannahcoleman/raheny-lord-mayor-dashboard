@@ -13,7 +13,8 @@ export function useDataset(): DatasetState {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([fetch("/dataset.json").then((r) => r.json()), fetch("/rounds.json").then((r) => r.json())])
+    const base = import.meta.env.BASE_URL;
+    Promise.all([fetch(`${base}dataset.json`).then((r) => r.json()), fetch(`${base}rounds.json`).then((r) => r.json())])
       .then(([records, rounds]) => {
         if (!cancelled) setState({ records, rounds, loading: false, error: null });
       })
