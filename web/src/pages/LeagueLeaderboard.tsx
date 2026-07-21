@@ -1,18 +1,31 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
-import { getLeagueLeaderboard } from "../lib/scoring";
-import { QUALIFICATION_THRESHOLD } from "../lib/types";
+import { getClubs, getLeagueLeaderboard } from "../lib/scoring";
+import { QUALIFICATION_THRESHOLD, type AgeGroup, type Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
+import FilterBar from "../components/FilterBar";
 
 export default function LeagueLeaderboard() {
   const { records, loading, error } = useDataset();
+  const [gender, setGender] = useState<Gender | "">("");
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
+  const [club, setClub] = useState<string>("");
+
+  const clubs = useMemo(() => getClubs(records), [records]);
   const league = useMemo(() => getLeagueLeaderboard(records), [records]);
+  const filtered = useMemo(
+    () =>
+      league.filter(
+        (e) => (!gender || e.gender === gender) && (!ageGroup || e.ageGroup === ageGroup) && (!club || e.club === club)
+      ),
+    [league, gender, ageGroup, club]
+  );
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
 
-  const qualified = league.filter((e) => e.qualified);
-  const unqualified = league.filter((e) => !e.qualified);
+  const qualified = filtered.filter((e) => e.qualified);
+  const unqualified = filtered.filter((e) => !e.qualified);
 
   return (
     <div>
@@ -21,6 +34,15 @@ export default function LeagueLeaderboard() {
         Sum of each qualifying athlete's fastest {QUALIFICATION_THRESHOLD} times out of 13 numbered rounds. Lowest total wins.
         Athletes need at least {QUALIFICATION_THRESHOLD} races to qualify.
       </p>
+      <FilterBar
+        gender={gender}
+        onGenderChange={setGender}
+        ageGroup={ageGroup}
+        onAgeGroupChange={setAgeGroup}
+        club={club}
+        onClubChange={setClub}
+        clubs={clubs}
+      />
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>

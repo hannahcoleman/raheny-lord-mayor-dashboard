@@ -1,10 +1,8 @@
 import { useDataset } from "../lib/useDataset";
 import { getRaceHighlights, numberedRecords, runnerRecords } from "../lib/scoring";
 import { formatDisplayDate } from "../lib/date";
+import { PLANNED_SCHEDULE } from "../lib/schedule";
 import RunnerLink from "../components/RunnerLink";
-
-const CUP_NAMES: Record<number, string> = { 4: "Tommy Lynam Cup", 8: "John Fennell Cup", 13: "Peter Doody Cup" };
-const TOTAL_ROUNDS = 13;
 
 export default function SeasonOverview() {
   const { records, rounds, loading, error } = useDataset();
@@ -17,18 +15,27 @@ export default function SeasonOverview() {
   for (const r of runnerRecords(numberedRecords(records))) {
     finisherCounts.set(r.roundNumber!, (finisherCounts.get(r.roundNumber!) ?? 0) + 1);
   }
+  const handicapFinishers = records.filter((r) => r.roundNumber === null && !r.isGenericEntry).length;
 
-  const rows = Array.from({ length: TOTAL_ROUNDS }, (_, i) => {
-    const roundNumber = i + 1;
-    const round = rounds.find((r) => r.roundNumber === roundNumber);
-    const highlight = highlights.find((h) => h.roundNumber === roundNumber);
-    return { roundNumber, round, highlight };
+  const rows = PLANNED_SCHEDULE.map((planned) => {
+    const round = planned.isHandicap
+      ? rounds.find((r) => r.isHandicap)
+      : rounds.find((r) => r.roundNumber === planned.roundNumber);
+    const highlight = highlights.find((h) => h.roundNumber === planned.roundNumber);
+    return { planned, round, highlight };
   });
 
   return (
     <div>
       <h2>Season Overview</h2>
-      <p>{rounds.filter((r) => !r.isHandicap).length} of {TOTAL_ROUNDS} numbered rounds run so far this season.</p>
+      <p>
+        {rounds.filter((r) => !r.isHandicap).length} of 13 numbered rounds run so far this season. Dates for rounds
+        not yet run are planned dates from{" "}
+        <a href="https://eventmaster.ie/event/R1L7CL5h76" target="_blank" rel="noreferrer">
+          Eventmaster
+        </a>{" "}
+        and may shift.
+      </p>
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>
@@ -41,16 +48,27 @@ export default function SeasonOverview() {
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ roundNumber, round, highlight }) => (
-              <tr key={roundNumber}>
+            {rows.map(({ planned, round, highlight }) => (
+              <tr key={planned.isHandicap ? "handicap" : planned.roundNumber} style={planned.isHandicap ? { borderTop: "2px solid var(--rs-green)" } : undefined}>
                 <td>
-                  Round {roundNumber}
-                  {CUP_NAMES[roundNumber] && <div className="pill">{CUP_NAMES[roundNumber]}</div>}
+                  {planned.isHandicap ? "Jim Wall Memorial Handicap" : `Round ${planned.roundNumber}`}
+                  {planned.cupName && <div className="pill">{planned.cupName}</div>}
                 </td>
-                <td>{round?.date ? formatDisplayDate(round.date) : "—"}</td>
-                <td>{highlight?.podiumMen[0] ? <RunnerLink name={highlight.podiumMen[0]} /> : round ? "—" : "Not yet run"}</td>
-                <td>{highlight?.podiumWomen[0] ? <RunnerLink name={highlight.podiumWomen[0]} /> : round ? "—" : "Not yet run"}</td>
-                <td>{round ? finisherCounts.get(roundNumber) ?? 0 : "—"}</td>
+                <td>
+                  {formatDisplayDate(round?.date ?? planned.plannedDate)}
+                  {!round && <span style={{ opacity: 0.6 }}> (planned)</span>}
+                </td>
+                {planned.isHandicap ? (
+                  <td colSpan={2} style={{ opacity: 0.7 }}>
+                    {round ? "See Jim Wall Handicap page" : "Not yet run — standalone, not part of series scoring"}
+                  </td>
+                ) : (
+                  <>
+                    <td>{highlight?.podiumMen[0] ? <RunnerLink name={highlight.podiumMen[0]} /> : round ? "—" : "Not yet run"}</td>
+                    <td>{highlight?.podiumWomen[0] ? <RunnerLink name={highlight.podiumWomen[0]} /> : round ? "—" : "Not yet run"}</td>
+                  </>
+                )}
+                <td>{planned.isHandicap ? (round ? handicapFinishers : "—") : round ? finisherCounts.get(planned.roundNumber!) ?? 0 : "—"}</td>
               </tr>
             ))}
           </tbody>

@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
 import { getClubs, getOverallLeaderboard } from "../lib/scoring";
-import { ADULT_AGE_GROUPS, type AgeGroup, type Gender } from "../lib/types";
+import type { AgeGroup, Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
+import FilterBar from "../components/FilterBar";
 
 export default function OverallLeaderboard() {
   const { records, loading, error } = useDataset();
@@ -28,29 +29,15 @@ export default function OverallLeaderboard() {
     <div>
       <h2>Overall Leaderboard</h2>
       <p>Each runner's single fastest time across every numbered round entered. No qualification threshold.</p>
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-        <select value={gender} onChange={(e) => setGender(e.target.value as Gender | "")}>
-          <option value="">All genders</option>
-          <option value="Men">Men</option>
-          <option value="Women">Women</option>
-        </select>
-        <select value={ageGroup} onChange={(e) => setAgeGroup(e.target.value as AgeGroup | "")}>
-          <option value="">All age groups</option>
-          {[...ADULT_AGE_GROUPS, "Juvenile" as const].map((ag) => (
-            <option key={ag} value={ag}>
-              {ag}
-            </option>
-          ))}
-        </select>
-        <select value={club} onChange={(e) => setClub(e.target.value)}>
-          <option value="">All clubs</option>
-          {clubs.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </div>
+      <FilterBar
+        gender={gender}
+        onGenderChange={setGender}
+        ageGroup={ageGroup}
+        onAgeGroupChange={setAgeGroup}
+        club={club}
+        onClubChange={setClub}
+        clubs={clubs}
+      />
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>

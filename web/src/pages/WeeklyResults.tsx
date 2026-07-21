@@ -1,10 +1,15 @@
 import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
-import { getRaceHighlights, getRacePlacements, numberedRecords, racePlacementKey } from "../lib/scoring";
+import { getClubs, getRaceHighlights, getRacePlacements, numberedRecords, racePlacementKey } from "../lib/scoring";
+import type { AgeGroup, Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
+import FilterBar from "../components/FilterBar";
 
 export default function WeeklyResults() {
   const { records, loading, error } = useDataset();
+  const [gender, setGender] = useState<Gender | "">("");
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
+  const [club, setClub] = useState<string>("");
   const numbered = useMemo(() => numberedRecords(records), [records]);
   const roundNumbers = useMemo(
     () => Array.from(new Set(numbered.map((r) => r.roundNumber!))).sort((a, b) => a - b),
@@ -13,6 +18,7 @@ export default function WeeklyResults() {
   const [selected, setSelected] = useState<number | null>(null);
   const activeRound = selected ?? roundNumbers[roundNumbers.length - 1] ?? null;
   const placements = useMemo(() => getRacePlacements(records), [records]);
+  const clubs = useMemo(() => getClubs(records), [records]);
 
   if (loading) return <p>Loading results…</p>;
   if (error) return <p>Could not load data: {error}</p>;
@@ -20,6 +26,9 @@ export default function WeeklyResults() {
 
   const raceRecords = numbered
     .filter((r) => r.roundNumber === activeRound)
+    .filter((r) => !gender || r.gender === gender)
+    .filter((r) => !ageGroup || r.ageGroup === ageGroup)
+    .filter((r) => !club || r.club === club)
     .sort((a, b) => a.place - b.place);
   const highlights = getRaceHighlights(records).find((h) => h.roundNumber === activeRound);
   const winnerLabelFor = (name: string) => {
@@ -45,6 +54,15 @@ export default function WeeklyResults() {
           </button>
         ))}
       </div>
+      <FilterBar
+        gender={gender}
+        onGenderChange={setGender}
+        ageGroup={ageGroup}
+        onAgeGroupChange={setAgeGroup}
+        club={club}
+        onClubChange={setClub}
+        clubs={clubs}
+      />
       <p>
         <span className="pill podium-1" style={{ marginRight: 4 }}>
           &nbsp;
