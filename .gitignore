@@ -1,0 +1,7 @@
+node_modules/
+dist/
+scraper/dist/
+web/public/dataset.json
+web/public/rounds.json
+.DS_Store
+*.log

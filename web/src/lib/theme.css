@@ -1,0 +1,146 @@
+:root {
+  --rs-green: #00a35f;
+  --rs-green-dark: #00814a;
+  --rs-green-pale: #e6f5ee;
+  --rs-charcoal: #252525;
+  --rs-charcoal-mid: #2e2e2e;
+  --rs-charcoal-soft: #464646;
+  --rs-text: #404040;
+  --rs-border: #e2e2e2;
+  --rs-bg: #ffffff;
+  --rs-card-bg: #ffffff;
+  --rs-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --rs-gold: #c9a227;
+  --rs-silver: #9aa0a6;
+  --rs-bronze: #a9714f;
+
+  --font-heading: "Oswald", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rs-bg: #17181a;
+    --rs-card-bg: #202224;
+    --rs-text: #e6e6e6;
+    --rs-border: #34363a;
+    --rs-green-pale: #103a28;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--rs-text);
+  background: var(--rs-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand,
+nav a {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+a {
+  color: var(--rs-green);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rs-border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+thead th {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--rs-charcoal-soft);
+  background: var(--rs-green-pale);
+}
+
+@media (prefers-color-scheme: dark) {
+  thead th {
+    color: #cfe9dc;
+  }
+}
+
+.card {
+  background: var(--rs-card-bg);
+  border: 1px solid var(--rs-border);
+  border-radius: 6px;
+  box-shadow: var(--rs-shadow);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--rs-green);
+  color: #fff;
+  padding: 0.5rem 1.1rem;
+  border-radius: 3px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--rs-green-dark);
+  text-decoration: none;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--rs-green-pale);
+  color: var(--rs-green-dark);
+}
+
+.podium-1 {
+  background: color-mix(in srgb, var(--rs-gold) 22%, transparent);
+}
+.podium-2 {
+  background: color-mix(in srgb, var(--rs-silver) 22%, transparent);
+}
+.podium-3 {
+  background: color-mix(in srgb, var(--rs-bronze) 22%, transparent);
+}
+.category-winner {
+  outline: 2px solid var(--rs-green);
+  outline-offset: -2px;
+}

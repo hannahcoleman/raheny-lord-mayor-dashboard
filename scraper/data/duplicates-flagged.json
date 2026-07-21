@@ -1,0 +1,53 @@
+[
+  {
+    "roundNumber": 2,
+    "raceName": "Round 2",
+    "name": "Suzanne Garry",
+    "occurrences": [
+      {
+        "place": 71,
+        "timeDisplay": "17:35",
+        "category": "O/50 Women"
+      },
+      {
+        "place": 80,
+        "timeDisplay": "22:52",
+        "category": "O/50 Women"
+      }
+    ]
+  },
+  {
+    "roundNumber": 7,
+    "raceName": "Round 7",
+    "name": "Leo Ward",
+    "occurrences": [
+      {
+        "place": 4,
+        "timeDisplay": "12:04",
+        "category": "Juvenile"
+      },
+      {
+        "place": 8,
+        "timeDisplay": "12:39",
+        "category": "Juvenile"
+      }
+    ]
+  },
+  {
+    "roundNumber": 7,
+    "raceName": "Round 7",
+    "name": "Suzanne Garry",
+    "occurrences": [
+      {
+        "place": 50,
+        "timeDisplay": "17:26",
+        "category": "O/50 Women"
+      },
+      {
+        "place": 65,
+        "timeDisplay": "23:09",
+        "category": "O/50 Women"
+      }
+    ]
+  }
+]
