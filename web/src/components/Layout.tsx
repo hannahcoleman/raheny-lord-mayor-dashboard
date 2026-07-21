@@ -1,7 +1,18 @@
 import { NavLink, Outlet } from "react-router-dom";
 import rahenyLogo from "../assets/raheny-logo.jpg";
+import { useDataset } from "../lib/useDataset";
 import "../lib/theme.css";
 import "./Layout.css";
+
+function formatLastUpdated(iso: string): string {
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 const NAV_ITEMS = [
   { to: "/", label: "Season", end: true },
@@ -14,6 +25,9 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout() {
+  const { refreshLog } = useDataset();
+  const lastUpdated = refreshLog[0]?.timestamp;
+
   return (
     <div className="app-shell">
       <div className="top-bar" />
@@ -34,11 +48,17 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        Unofficial results dashboard for the 2026 Lord Mayor of Raheny Two Mile Series. Data sourced from{" "}
-        <a href="https://rahenyshamrock.ie/?cat=6" target="_blank" rel="noreferrer">
-          rahenyshamrock.ie
-        </a>
-        .
+        <div>
+          Unofficial results dashboard for the 2026 Lord Mayor of Raheny Two Mile Series. Data sourced from{" "}
+          <a href="https://rahenyshamrock.ie/?cat=6" target="_blank" rel="noreferrer">
+            rahenyshamrock.ie
+          </a>
+          .
+        </div>
+        <div>
+          {lastUpdated ? `Data last refreshed ${formatLastUpdated(lastUpdated)}` : "Data refresh history unavailable"} —{" "}
+          <NavLink to="/updates">Update history</NavLink>
+        </div>
       </footer>
     </div>
   );

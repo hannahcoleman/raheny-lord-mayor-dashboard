@@ -37,6 +37,13 @@ export interface ResultRecord {
   isGenericEntry: boolean;
 }
 
+export interface RefreshLogEntry {
+  timestamp: string;
+  roundsScraped: number;
+  newRaces: string[];
+  changedRaces: string[];
+}
+
 export const NUMBERED_ROUNDS_TOTAL = 13;
 export const QUALIFICATION_THRESHOLD = 8;
 

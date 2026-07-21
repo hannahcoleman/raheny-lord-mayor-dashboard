@@ -8,6 +8,7 @@ import SeriesPositions from "./pages/SeriesPositions";
 import Records from "./pages/Records";
 import RunnerProfile from "./pages/RunnerProfile";
 import Handicap from "./pages/Handicap";
+import Updates from "./pages/Updates";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="records" element={<Records />} />
           <Route path="runner/:name" element={<RunnerProfile />} />
           <Route path="handicap" element={<Handicap />} />
+          <Route path="updates" element={<Updates />} />
         </Route>
       </Routes>
     </BrowserRouter>

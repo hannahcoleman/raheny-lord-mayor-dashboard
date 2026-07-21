@@ -1,13 +1,17 @@
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { fetchSeasonRounds } from "./fetchIndex.js";
 import { parseRoundPage } from "./parseRound.js";
 import { isGenericEntry, parseCategory, parseTimeToSeconds, formatSecondsAsTime } from "./normalize.js";
 import { loadAliases, applyAlias, suggestAliases } from "./aliases.js";
 import { flagDuplicates } from "./flagDuplicates.js";
+import { buildRefreshLogEntry, type RefreshLogEntry } from "./refreshLog.js";
 import type { ResultRecord, RoundMeta } from "./types.js";
 
 const DATA_DIR = new URL("../data/", import.meta.url);
 const ALIASES_PATH = new URL("aliases.json", DATA_DIR);
+const DATASET_PATH = new URL("dataset.json", DATA_DIR);
+const REFRESH_LOG_PATH = new URL("refresh-log.json", DATA_DIR);
+const MAX_LOG_ENTRIES = 50;
 
 function raceNameFor(round: RoundMeta): string {
   if (round.isHandicap) return "Jim Wall Memorial Handicap";
@@ -24,6 +28,14 @@ async function main() {
   console.log(`Found ${rounds.length} round posts (${rounds.filter((r) => !r.isHandicap).length} numbered, ${rounds.filter((r) => r.isHandicap).length} handicap).`);
 
   const aliases = loadAliases(ALIASES_PATH);
+
+  let previousRecords: ResultRecord[] = [];
+  try {
+    previousRecords = JSON.parse(readFileSync(DATASET_PATH, "utf-8"));
+  } catch {
+    // no previous dataset yet - first ever run
+  }
+
   const allRecords: ResultRecord[] = [];
 
   for (const round of rounds) {
@@ -56,10 +68,21 @@ async function main() {
     aliases
   );
 
-  writeFileSync(new URL("dataset.json", DATA_DIR), JSON.stringify(allRecords, null, 2));
+  writeFileSync(DATASET_PATH, JSON.stringify(allRecords, null, 2));
   writeFileSync(new URL("rounds.json", DATA_DIR), JSON.stringify(rounds, null, 2));
   writeFileSync(new URL("duplicates-flagged.json", DATA_DIR), JSON.stringify(duplicates, null, 2));
   writeFileSync(new URL("alias-suggestions.json", DATA_DIR), JSON.stringify(suggestions, null, 2));
+
+  const logEntry = buildRefreshLogEntry(previousRecords, allRecords, rounds.length);
+  let log: RefreshLogEntry[] = [];
+  try {
+    log = JSON.parse(readFileSync(REFRESH_LOG_PATH, "utf-8"));
+  } catch {
+    // first ever run
+  }
+  log.unshift(logEntry);
+  log = log.slice(0, MAX_LOG_ENTRIES);
+  writeFileSync(REFRESH_LOG_PATH, JSON.stringify(log, null, 2));
 
   // aliases.json is human-edited; only create it if missing, never overwrite.
   try {
@@ -71,6 +94,9 @@ async function main() {
   console.log(`Done. ${allRecords.length} result rows across ${rounds.length} races.`);
   console.log(`${duplicates.length} same-race duplicate name(s) flagged for review in duplicates-flagged.json.`);
   console.log(`${suggestions.length} possible-alias suggestion(s) in alias-suggestions.json.`);
+  console.log(
+    `Refresh log: ${logEntry.newRaces.length} new race(s), ${logEntry.changedRaces.length} changed race(s) since last scrape.`
+  );
 }
 
 main().catch((err) => {
