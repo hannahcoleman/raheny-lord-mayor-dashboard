@@ -5,11 +5,13 @@ import { isGenericEntry, parseCategory, parseTimeToSeconds, formatSecondsAsTime 
 import { loadAliases, applyAlias, suggestAliases } from "./aliases.js";
 import { flagDuplicates } from "./flagDuplicates.js";
 import { flagCategoryChanges } from "./flagCategoryChanges.js";
+import { inferGenderFromName } from "./inferJuvenileGender.js";
 import { buildRefreshLogEntry, type RefreshLogEntry } from "./refreshLog.js";
 import type { ResultRecord, RoundMeta } from "./types.js";
 
 const DATA_DIR = new URL("../data/", import.meta.url);
 const ALIASES_PATH = new URL("aliases.json", DATA_DIR);
+const JUVENILE_GENDERS_PATH = new URL("juvenile-genders.json", DATA_DIR);
 const DATASET_PATH = new URL("dataset.json", DATA_DIR);
 const REFRESH_LOG_PATH = new URL("refresh-log.json", DATA_DIR);
 const MAX_LOG_ENTRIES = 50;
@@ -70,11 +72,29 @@ async function main() {
     aliases
   );
 
+  // Best-effort name-based gender guesses for Juveniles (source data never
+  // records one) - advisory only. A human reviews these and copies confirmed
+  // ones into juvenile-genders.json; nothing here is applied automatically.
+  const juvenileNames = new Set(
+    allRecords.filter((r) => r.ageGroup === "Juvenile" && !r.isGenericEntry).map((r) => r.name)
+  );
+  const juvenileGenderSuggestions = Array.from(juvenileNames)
+    .map((name) => ({ name, suggestedGender: inferGenderFromName(name) }))
+    .filter((s) => s.suggestedGender !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const unmatchedJuvenileNames = Array.from(juvenileNames)
+    .filter((name) => inferGenderFromName(name) === null)
+    .sort((a, b) => a.localeCompare(b));
+
   writeFileSync(DATASET_PATH, JSON.stringify(allRecords, null, 2));
   writeFileSync(new URL("rounds.json", DATA_DIR), JSON.stringify(rounds, null, 2));
   writeFileSync(new URL("duplicates-flagged.json", DATA_DIR), JSON.stringify(duplicates, null, 2));
   writeFileSync(new URL("category-changes-flagged.json", DATA_DIR), JSON.stringify(categoryChanges, null, 2));
   writeFileSync(new URL("alias-suggestions.json", DATA_DIR), JSON.stringify(suggestions, null, 2));
+  writeFileSync(
+    new URL("juvenile-gender-suggestions.json", DATA_DIR),
+    JSON.stringify({ suggestions: juvenileGenderSuggestions, unmatched: unmatchedJuvenileNames }, null, 2)
+  );
 
   const logEntry = buildRefreshLogEntry(previousRecords, allRecords, rounds.length);
   let log: RefreshLogEntry[] = [];
@@ -87,11 +107,14 @@ async function main() {
   log = log.slice(0, MAX_LOG_ENTRIES);
   writeFileSync(REFRESH_LOG_PATH, JSON.stringify(log, null, 2));
 
-  // aliases.json is human-edited; only create it if missing, never overwrite.
-  try {
-    writeFileSync(ALIASES_PATH, JSON.stringify({}, null, 2), { flag: "wx" });
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+  // aliases.json and juvenile-genders.json are human-edited; only create
+  // them if missing, never overwrite.
+  for (const path of [ALIASES_PATH, JUVENILE_GENDERS_PATH]) {
+    try {
+      writeFileSync(path, JSON.stringify({}, null, 2), { flag: "wx" });
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+    }
   }
 
   console.log(`Done. ${allRecords.length} result rows across ${rounds.length} races.`);

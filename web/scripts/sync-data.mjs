@@ -12,6 +12,7 @@ for (const file of [
   "refresh-log.json",
   "duplicates-flagged.json",
   "category-changes-flagged.json",
+  "juvenile-genders.json",
 ]) {
   copyFileSync(`${dataDir}${file}`, `${publicDir}${file}`);
   console.log(`Copied ${file} -> public/${file}`);

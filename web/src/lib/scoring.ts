@@ -202,8 +202,20 @@ export interface RaceHighlights {
   categoryWinners: { label: string; name: string }[];
 }
 
-/** Per-race top-3-gender podiums and age-category winners (incl. combined Juvenile), one entry per numbered race. */
-export function getRaceHighlights(records: ResultRecord[]): RaceHighlights[] {
+/**
+ * Per-race top-3-gender podiums and age-category winners (incl. combined
+ * Juvenile), one entry per numbered race.
+ *
+ * juvenileGenders is a human-curated name -> gender map (the source data
+ * never records a Juvenile's gender) used ONLY to decide whether a Juvenile
+ * counts toward the overall Men's/Women's podium - the Juvenile category
+ * itself (category wins, League/Series Juvenile scoring) always stays one
+ * combined category regardless of this map.
+ */
+export function getRaceHighlights(
+  records: ResultRecord[],
+  juvenileGenders: Record<string, Gender> = {}
+): RaceHighlights[] {
   const byRace = new Map<string, ResultRecord[]>();
   for (const r of runnerRecords(numberedRecords(records)).filter((r) => r.timeSeconds !== null)) {
     const key = `${r.roundNumber}`;
@@ -214,8 +226,13 @@ export function getRaceHighlights(records: ResultRecord[]): RaceHighlights[] {
   const highlights: RaceHighlights[] = [];
   for (const [, raceRecords] of byRace) {
     const sorted = [...raceRecords].sort((a, b) => a.timeSeconds! - b.timeSeconds!);
-    const men = sorted.filter((r) => r.gender === "Men" && r.ageGroup !== "Juvenile");
-    const women = sorted.filter((r) => r.gender === "Women" && r.ageGroup !== "Juvenile");
+    const men = sorted.filter(
+      (r) => (r.ageGroup !== "Juvenile" && r.gender === "Men") || (r.ageGroup === "Juvenile" && juvenileGenders[r.name] === "Men")
+    );
+    const women = sorted.filter(
+      (r) =>
+        (r.ageGroup !== "Juvenile" && r.gender === "Women") || (r.ageGroup === "Juvenile" && juvenileGenders[r.name] === "Women")
+    );
     const juveniles = sorted.filter((r) => r.ageGroup === "Juvenile");
 
     const categoryWinners: RaceHighlights["categoryWinners"] = [];
@@ -329,8 +346,8 @@ export interface RecordsTables {
 }
 
 /** Most overall gender-podium finishes and most age-category wins across the season, per athlete. */
-export function getRecordsTables(records: ResultRecord[]): RecordsTables {
-  const highlights = getRaceHighlights(records);
+export function getRecordsTables(records: ResultRecord[], juvenileGenders: Record<string, Gender> = {}): RecordsTables {
+  const highlights = getRaceHighlights(records, juvenileGenders);
 
   const podiumCounts = new Map<string, number>();
   const categoryCounts = new Map<string, number>();
@@ -365,7 +382,11 @@ export interface RunnerProfile {
   }[];
 }
 
-export function getRunnerProfile(records: ResultRecord[], name: string): RunnerProfile | null {
+export function getRunnerProfile(
+  records: ResultRecord[],
+  name: string,
+  juvenileGenders: Record<string, Gender> = {}
+): RunnerProfile | null {
   const races = numberedRecords(records)
     .filter((r) => r.name === name && !r.isGenericEntry)
     .sort((a, b) => (a.roundNumber ?? 0) - (b.roundNumber ?? 0));
@@ -375,7 +396,7 @@ export function getRunnerProfile(records: ResultRecord[], name: string): RunnerP
   const pb = timed.length > 0 ? Math.min(...timed.map((r) => r.timeSeconds!)) : null;
 
   const league = getLeagueLeaderboard(records).find((e) => e.name === name) ?? null;
-  const highlights = getRaceHighlights(records);
+  const highlights = getRaceHighlights(records, juvenileGenders);
 
   const trophies: RunnerProfile["trophies"] = [];
   for (const race of highlights) {

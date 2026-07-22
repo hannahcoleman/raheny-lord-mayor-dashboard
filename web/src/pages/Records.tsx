@@ -4,8 +4,8 @@ import { getRecordsTables } from "../lib/scoring";
 import RunnerLink from "../components/RunnerLink";
 
 export default function Records() {
-  const { records, loading, error } = useDataset();
-  const tables = useMemo(() => getRecordsTables(records), [records]);
+  const { records, juvenileGenders, loading, error } = useDataset();
+  const tables = useMemo(() => getRecordsTables(records, juvenileGenders), [records, juvenileGenders]);
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;

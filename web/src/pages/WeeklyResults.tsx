@@ -16,7 +16,7 @@ import FilterBar from "../components/FilterBar";
 
 export default function WeeklyResults() {
   const { round: roundParam } = useParams();
-  const { records, loading, error } = useDataset();
+  const { records, juvenileGenders, loading, error } = useDataset();
   const [gender, setGender] = useState<Gender | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
@@ -54,7 +54,7 @@ export default function WeeklyResults() {
     .filter((r) => !ageGroup || r.ageGroup === ageGroup)
     .filter((r) => !club || r.club === club)
     .sort((a, b) => a.place - b.place);
-  const highlights = getRaceHighlights(records).find((h) => h.roundNumber === activeRound);
+  const highlights = getRaceHighlights(records, juvenileGenders).find((h) => h.roundNumber === activeRound);
   const winnerLabelFor = (name: string) => {
     const labels: string[] = [];
     if (highlights?.podiumMen.includes(name)) labels.push(`#${highlights.podiumMen.indexOf(name) + 1} Men`);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CategoryChangeFlag, DuplicateFlag, RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
+import type { CategoryChangeFlag, DuplicateFlag, Gender, RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
 
 interface DatasetState {
   records: ResultRecord[];
@@ -7,6 +7,7 @@ interface DatasetState {
   refreshLog: RefreshLogEntry[];
   duplicatesFlagged: DuplicateFlag[];
   categoryChangesFlagged: CategoryChangeFlag[];
+  juvenileGenders: Record<string, Gender>;
   loading: boolean;
   error: string | null;
 }
@@ -18,6 +19,7 @@ export function useDataset(): DatasetState {
     refreshLog: [],
     duplicatesFlagged: [],
     categoryChangesFlagged: [],
+    juvenileGenders: {},
     loading: true,
     error: null,
   });
@@ -31,10 +33,20 @@ export function useDataset(): DatasetState {
       fetch(`${base}refresh-log.json`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${base}duplicates-flagged.json`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${base}category-changes-flagged.json`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${base}juvenile-genders.json`).then((r) => (r.ok ? r.json() : {})),
     ])
-      .then(([records, rounds, refreshLog, duplicatesFlagged, categoryChangesFlagged]) => {
+      .then(([records, rounds, refreshLog, duplicatesFlagged, categoryChangesFlagged, juvenileGenders]) => {
         if (!cancelled)
-          setState({ records, rounds, refreshLog, duplicatesFlagged, categoryChangesFlagged, loading: false, error: null });
+          setState({
+            records,
+            rounds,
+            refreshLog,
+            duplicatesFlagged,
+            categoryChangesFlagged,
+            juvenileGenders,
+            loading: false,
+            error: null,
+          });
       })
       .catch((err) => {
         if (!cancelled) setState((s) => ({ ...s, loading: false, error: String(err) }));

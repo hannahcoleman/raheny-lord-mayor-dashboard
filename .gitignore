@@ -6,5 +6,6 @@ web/public/rounds.json
 web/public/refresh-log.json
 web/public/duplicates-flagged.json
 web/public/category-changes-flagged.json
+web/public/juvenile-genders.json
 .DS_Store
 *.log

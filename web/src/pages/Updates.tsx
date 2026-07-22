@@ -28,6 +28,11 @@ const SCORING_LOGIC: { aspect: string; approach: string }[] = [
       "The source results never split Juvenile by gender, so it's scored as one combined category (no separate Juvenile Men/Women).",
   },
   {
+    aspect: "Juvenile gender (Overall Podium only)",
+    approach:
+      "A human-curated name->gender map (juvenile-genders.json) lets a Juvenile count toward the Overall Men's/Women's Podium if their gender is confirmed - the Juvenile category itself always stays combined regardless. Suggestions are inferred from first name (juvenile-gender-suggestions.json) but never applied automatically.",
+  },
+  {
     aspect: "Round 14 (Jim Wall Memorial Handicap)",
     approach: "Fully excluded from Overall, League, Series Positions, and Records - shown only on its own standalone page.",
   },

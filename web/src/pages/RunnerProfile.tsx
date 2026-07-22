@@ -24,8 +24,11 @@ function formatPace(totalSeconds: number, distance: number, unit: "mi" | "km"): 
 export default function RunnerProfile() {
   const { name = "" } = useParams();
   const decodedName = decodeURIComponent(name);
-  const { records, loading, error } = useDataset();
-  const profile = useMemo(() => getRunnerProfile(records, decodedName), [records, decodedName]);
+  const { records, juvenileGenders, loading, error } = useDataset();
+  const profile = useMemo(
+    () => getRunnerProfile(records, decodedName, juvenileGenders),
+    [records, decodedName, juvenileGenders]
+  );
   const placements = useMemo(() => getRacePlacements(records), [records]);
 
   if (loading) return <p>Loading…</p>;

@@ -6,12 +6,12 @@ import { PLANNED_SCHEDULE } from "../lib/schedule";
 import RunnerLink from "../components/RunnerLink";
 
 export default function SeasonOverview() {
-  const { records, rounds, loading, error } = useDataset();
+  const { records, rounds, juvenileGenders, loading, error } = useDataset();
 
   if (loading) return <p>Loading season data…</p>;
   if (error) return <p>Could not load data: {error}</p>;
 
-  const highlights = getRaceHighlights(records);
+  const highlights = getRaceHighlights(records, juvenileGenders);
   // Includes generic "A Runner" entries - they took a real finishing place,
   // so the count here matches the field-size totals shown elsewhere
   // (Weekly Results / Runner Profile place-of-total).
