@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useDataset } from "../lib/useDataset";
 import { getRaceHighlights, numberedRecords } from "../lib/scoring";
 import { formatDisplayDate } from "../lib/date";
@@ -46,7 +47,11 @@ export default function SeasonOverview() {
             {rows.map(({ planned, round, highlight }) => (
               <tr key={planned.roundNumber} style={planned.isHandicap ? { borderTop: "2px solid var(--rs-green)" } : undefined}>
                 <td>
-                  Round {planned.roundNumber}
+                  {round && !planned.isHandicap ? (
+                    <Link to={`/results/${planned.roundNumber}`}>Round {planned.roundNumber}</Link>
+                  ) : (
+                    `Round ${planned.roundNumber}`
+                  )}
                   {planned.cupName && <div className="pill">{planned.cupName}</div>}
                 </td>
                 <td>{formatDisplayDate(planned.plannedDate)}</td>

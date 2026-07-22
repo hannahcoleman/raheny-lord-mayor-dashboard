@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { useDataset } from "../lib/useDataset";
 import {
   getAvailableAgeGroups,
@@ -14,6 +15,7 @@ import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
 
 export default function WeeklyResults() {
+  const { round: roundParam } = useParams();
   const { records, loading, error } = useDataset();
   const [gender, setGender] = useState<Gender | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
@@ -23,8 +25,11 @@ export default function WeeklyResults() {
     () => Array.from(new Set(numbered.map((r) => r.roundNumber!))).sort((a, b) => a - b),
     [numbered]
   );
-  const [selected, setSelected] = useState<number | null>(null);
-  const activeRound = selected ?? roundNumbers[roundNumbers.length - 1] ?? null;
+  const requestedRound = roundParam ? Number(roundParam) : null;
+  const activeRound =
+    requestedRound !== null && roundNumbers.includes(requestedRound)
+      ? requestedRound
+      : (roundNumbers[roundNumbers.length - 1] ?? null);
   const placements = useMemo(() => getRacePlacements(records), [records]);
 
   const roundRecords = useMemo(() => numbered.filter((r) => r.roundNumber === activeRound), [numbered, activeRound]);
@@ -63,14 +68,14 @@ export default function WeeklyResults() {
       <h2>Weekly Results</h2>
       <div style={{ marginBottom: "1rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
         {roundNumbers.map((n) => (
-          <button
+          <Link
             key={n}
+            to={`/results/${n}`}
             className="btn"
             style={{ background: n === activeRound ? "var(--rs-green-dark)" : "var(--rs-charcoal-soft)" }}
-            onClick={() => setSelected(n)}
           >
             Rd {n}
-          </button>
+          </Link>
         ))}
       </div>
       <FilterBar

@@ -17,6 +17,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<SeasonOverview />} />
           <Route path="results" element={<WeeklyResults />} />
+          <Route path="results/:round" element={<WeeklyResults />} />
           <Route path="overall" element={<OverallLeaderboard />} />
           <Route path="league" element={<LeagueLeaderboard />} />
           <Route path="positions" element={<SeriesPositions />} />
