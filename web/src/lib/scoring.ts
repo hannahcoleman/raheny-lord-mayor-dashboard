@@ -249,12 +249,15 @@ export interface RacePlacementInfo {
   totalFinishers: number;
   genderTotal: number;
   genderRank: number;
+  categoryTotal: number;
+  categoryRank: number;
 }
 
 /**
  * Per-race field-size context for a single result row: total finishers in
- * the race (all rows, including generic entries, since they took a place)
- * and this runner's rank within their own gender/Juvenile pool.
+ * the race (all rows, including generic entries, since they took a place),
+ * this runner's rank within their own gender/Juvenile pool, and their rank
+ * within their specific age-category (e.g. "O/45 Men").
  */
 export function getRacePlacements(records: ResultRecord[]): Map<string, RacePlacementInfo> {
   const byRound = new Map<number, ResultRecord[]>();
@@ -268,19 +271,43 @@ export function getRacePlacements(records: ResultRecord[]): Map<string, RacePlac
   for (const [, raceRecords] of byRound) {
     const totalFinishers = raceRecords.length;
     const byGender = new Map<Gender, ResultRecord[]>();
+    const byCategory = new Map<string, ResultRecord[]>();
     for (const r of raceRecords) {
       if (r.isGenericEntry) continue;
       if (!byGender.has(r.gender)) byGender.set(r.gender, []);
       byGender.get(r.gender)!.push(r);
+      const categoryKey = `${r.gender}::${r.ageGroup}`;
+      if (!byCategory.has(categoryKey)) byCategory.set(categoryKey, []);
+      byCategory.get(categoryKey)!.push(r);
     }
+
+    const genderRankByKey = new Map<string, { rank: number; total: number }>();
     for (const [, group] of byGender) {
       const sorted = [...group].sort((a, b) => a.place - b.place);
       sorted.forEach((r, i) => {
-        result.set(`${r.roundNumber}::${r.name}::${r.place}`, {
-          totalFinishers,
-          genderTotal: sorted.length,
-          genderRank: i + 1,
-        });
+        genderRankByKey.set(`${r.roundNumber}::${r.name}::${r.place}`, { rank: i + 1, total: sorted.length });
+      });
+    }
+
+    const categoryRankByKey = new Map<string, { rank: number; total: number }>();
+    for (const [, group] of byCategory) {
+      const sorted = [...group].sort((a, b) => a.place - b.place);
+      sorted.forEach((r, i) => {
+        categoryRankByKey.set(`${r.roundNumber}::${r.name}::${r.place}`, { rank: i + 1, total: sorted.length });
+      });
+    }
+
+    for (const r of raceRecords) {
+      if (r.isGenericEntry) continue;
+      const key = `${r.roundNumber}::${r.name}::${r.place}`;
+      const genderInfo = genderRankByKey.get(key)!;
+      const categoryInfo = categoryRankByKey.get(key)!;
+      result.set(key, {
+        totalFinishers,
+        genderTotal: genderInfo.total,
+        genderRank: genderInfo.rank,
+        categoryTotal: categoryInfo.total,
+        categoryRank: categoryInfo.rank,
       });
     }
   }

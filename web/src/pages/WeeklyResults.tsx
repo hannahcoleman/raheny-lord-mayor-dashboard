@@ -105,6 +105,7 @@ export default function WeeklyResults() {
             <tr>
               <th>Place</th>
               <th>Gender Place</th>
+              <th>Category Place</th>
               <th>Name</th>
               <th>Club</th>
               <th>Category</th>
@@ -130,6 +131,7 @@ export default function WeeklyResults() {
                     {r.place}/{placement?.totalFinishers ?? "—"}
                   </td>
                   <td>{placement ? `${placement.genderRank}/${placement.genderTotal}` : "—"}</td>
+                  <td>{placement ? `${placement.categoryRank}/${placement.categoryTotal}` : "—"}</td>
                   <td>{r.isGenericEntry ? r.name : <RunnerLink name={r.name} />}</td>
                   <td>{r.club}</td>
                   <td>{r.category}</td>
