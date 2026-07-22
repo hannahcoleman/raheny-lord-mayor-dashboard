@@ -10,6 +10,7 @@ export default function OverallLeaderboard() {
   const [gender, setGender] = useState<Gender | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
+  const [search, setSearch] = useState("");
 
   const clubs = useMemo(() => getClubs(records), [records]);
   const genders = useMemo(() => getAvailableGenders(records), [records]);
@@ -20,8 +21,12 @@ export default function OverallLeaderboard() {
         gender: gender || undefined,
         ageGroup: ageGroup || undefined,
         club: club || undefined,
-      }),
+      }).map((e, i) => ({ ...e, rank: i + 1 })),
     [records, gender, ageGroup, club]
+  );
+  const visible = useMemo(
+    () => leaderboard.filter((e) => e.name.toLowerCase().includes(search.trim().toLowerCase())),
+    [leaderboard, search]
   );
 
   if (loading) return <p>Loading…</p>;
@@ -42,6 +47,13 @@ export default function OverallLeaderboard() {
         ageGroups={ageGroups}
         clubs={clubs}
       />
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by name…"
+        style={{ marginBottom: "1rem", width: "100%", maxWidth: 300 }}
+      />
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>
@@ -55,9 +67,9 @@ export default function OverallLeaderboard() {
             </tr>
           </thead>
           <tbody>
-            {leaderboard.map((e, i) => (
+            {visible.map((e) => (
               <tr key={e.name}>
-                <td>{i + 1}</td>
+                <td>{e.rank}</td>
                 <td>
                   <RunnerLink name={e.name} />
                 </td>

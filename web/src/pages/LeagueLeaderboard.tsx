@@ -10,6 +10,7 @@ export default function LeagueLeaderboard() {
   const [gender, setGender] = useState<Gender | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
+  const [search, setSearch] = useState("");
 
   const clubs = useMemo(() => getClubs(records), [records]);
   const genders = useMemo(() => getAvailableGenders(records), [records]);
@@ -26,8 +27,11 @@ export default function LeagueLeaderboard() {
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
 
-  const qualified = filtered.filter((e) => e.qualified);
+  const qualified = filtered.filter((e) => e.qualified).map((e, i) => ({ ...e, rank: i + 1 }));
   const unqualified = filtered.filter((e) => !e.qualified);
+  const searchLower = search.trim().toLowerCase();
+  const visibleQualified = qualified.filter((e) => e.name.toLowerCase().includes(searchLower));
+  const visibleUnqualified = unqualified.filter((e) => e.name.toLowerCase().includes(searchLower));
 
   return (
     <div>
@@ -47,6 +51,13 @@ export default function LeagueLeaderboard() {
         ageGroups={ageGroups}
         clubs={clubs}
       />
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by name…"
+        style={{ marginBottom: "1rem", width: "100%", maxWidth: 300 }}
+      />
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>
@@ -61,9 +72,9 @@ export default function LeagueLeaderboard() {
             </tr>
           </thead>
           <tbody>
-            {qualified.map((e, i) => (
+            {visibleQualified.map((e) => (
               <tr key={e.name}>
-                <td>{i + 1}</td>
+                <td>{e.rank}</td>
                 <td>
                   <RunnerLink name={e.name} />
                 </td>
@@ -91,7 +102,7 @@ export default function LeagueLeaderboard() {
             </tr>
           </thead>
           <tbody>
-            {unqualified.map((e) => (
+            {visibleUnqualified.map((e) => (
               <tr key={e.name}>
                 <td>
                   <RunnerLink name={e.name} />

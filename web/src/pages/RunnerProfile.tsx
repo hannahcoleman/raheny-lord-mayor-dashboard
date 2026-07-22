@@ -74,7 +74,7 @@ export default function RunnerProfile() {
               label={{ value: "Time", angle: -90, position: "insideLeft" }}
             />
             <Tooltip formatter={(v) => formatSeconds(Number(v))} labelFormatter={(l) => `Round ${l}`} />
-            <Line type="monotone" dataKey="timeSeconds" stroke="var(--rs-green)" strokeWidth={2} dot={{ r: 4 }} />
+            <Line type="monotone" dataKey="timeSeconds" name="Time" stroke="var(--rs-green)" strokeWidth={2} dot={{ r: 4 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -118,6 +118,7 @@ export default function RunnerProfile() {
               <th>Round</th>
               <th>Place</th>
               <th>Gender Place</th>
+              <th>Category Place</th>
               <th>Category</th>
               <th>Time</th>
               <th>Pace/mile</th>
@@ -134,6 +135,7 @@ export default function RunnerProfile() {
                     {r.place}/{placement?.totalFinishers ?? "—"}
                   </td>
                   <td>{placement ? `${placement.genderRank}/${placement.genderTotal}` : "—"}</td>
+                  <td>{placement ? `${placement.categoryRank}/${placement.categoryTotal}` : "—"}</td>
                   <td>{r.category}</td>
                   <td>{r.timeDisplay}</td>
                   <td>{r.timeSeconds !== null ? formatPace(r.timeSeconds, COURSE_MILES, "mi") : "—"}</td>

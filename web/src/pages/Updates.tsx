@@ -91,8 +91,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
 
   return (
     <div className="card">
-      <h3>Data Integrity, Category Changes &amp; Scoring Logic</h3>
-      <p>Enter the admin password to view flagged data issues, the scoring-logic reference table, and manual refresh controls.</p>
+      <h3>Admin</h3>
       <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         <input
           type="password"
