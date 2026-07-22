@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Commits pushed by the scrape workflow use the default GITHUB_TOKEN,
+  # which GitHub deliberately excludes from triggering other workflows'
+  # `push` events (anti-loop safeguard) - so redeploy explicitly whenever
+  # that workflow finishes, instead of relying on push alone.
+  workflow_run:
+    workflows: ["Weekly data refresh"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -16,9 +23,12 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 24
