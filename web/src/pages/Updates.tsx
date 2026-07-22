@@ -36,7 +36,7 @@ const SCORING_LOGIC: { aspect: string; approach: string }[] = [
   {
     aspect: "Cross-week category changes",
     approach:
-      "Each race is scored using that week's recorded category as-is, with no auto-correction. Listed in Category Changes above for manual review - could be a genuine age-category change, a data-entry error, or two people sharing a name.",
+      "A single clean move to an older bracket (same gender, stays there for the rest of the season) is treated as a genuine mid-season birthday and not flagged. Anything else - reverting back, moving to a younger bracket, or involving Juvenile - is listed in Category Changes above for manual review.",
   },
   {
     aspect: 'Generic "A Runner" entries',
@@ -71,41 +71,24 @@ function formatTimestamp(iso: string): string {
   });
 }
 
-function AdminPanel() {
+function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
   const [password, setPassword] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
   const [wrongPassword, setWrongPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const hash = await sha256Hex(password);
     if (hash === ADMIN_PASSWORD_HASH) {
-      setUnlocked(true);
-      setWrongPassword(false);
+      onUnlock();
     } else {
       setWrongPassword(true);
     }
   };
 
-  if (unlocked) {
-    return (
-      <div className="card">
-        <h3>Manual Data Refresh</h3>
-        <p>
-          This opens the "Weekly data refresh" workflow on GitHub. You'll need to be logged into GitHub with access to
-          this repo to actually click "Run workflow" there — the password above is just a casual gate on this page, not
-          real security, since anything shipped to a public site is visible to anyone who looks.
-        </p>
-        <a className="btn" href={WORKFLOW_URL} target="_blank" rel="noreferrer">
-          Open GitHub Actions to Run Refresh
-        </a>
-      </div>
-    );
-  }
-
   return (
     <div className="card">
-      <h3>Admin</h3>
+      <h3>Data Integrity, Category Changes &amp; Scoring Logic</h3>
+      <p>Enter the admin password to view flagged data issues, the scoring-logic reference table, and manual refresh controls.</p>
       <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         <input
           type="password"
@@ -124,6 +107,7 @@ function AdminPanel() {
 
 export default function Updates() {
   const { refreshLog, duplicatesFlagged, categoryChangesFlagged, loading, error } = useDataset();
+  const [unlocked, setUnlocked] = useState(false);
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
@@ -164,91 +148,109 @@ export default function Updates() {
         </div>
       )}
 
-      <h3>Data Integrity Issues</h3>
-      <p>
-        Problems found in the source results tables while scraping, and how each was handled. These are never
-        auto-resolved - both entries are kept in the dataset as scraped until reviewed by hand.
-      </p>
-      {duplicatesFlagged.length === 0 ? (
-        <div className="card">No same-race duplicate entries flagged.</div>
+      {!unlocked ? (
+        <PasswordGate onUnlock={() => setUnlocked(true)} />
       ) : (
-        <div className="card" style={{ padding: 0 }}>
-          <table>
-            <thead>
-              <tr>
-                <th>Week</th>
-                <th>Issue</th>
-                <th>Approach taken</th>
-              </tr>
-            </thead>
-            <tbody>
-              {duplicatesFlagged.map((flag, i) => (
-                <tr key={i}>
-                  <td>{flag.raceName}</td>
-                  <td>
-                    "{flag.name}" appears twice in the results (place {flag.occurrences.map((o) => o.place).join(" and ")},
-                    times {flag.occurrences.map((o) => o.timeDisplay).join(" and ")})
-                  </td>
-                  <td>Both entries kept as separate results, flagged for manual review</td>
+        <>
+          <h3>Data Integrity Issues</h3>
+          <p>
+            Problems found in the source results tables while scraping, and how each was handled. These are never
+            auto-resolved - both entries are kept in the dataset as scraped until reviewed by hand.
+          </p>
+          {duplicatesFlagged.length === 0 ? (
+            <div className="card">No same-race duplicate entries flagged.</div>
+          ) : (
+            <div className="card" style={{ padding: 0 }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Week</th>
+                    <th>Issue</th>
+                    <th>Approach taken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {duplicatesFlagged.map((flag, i) => (
+                    <tr key={i}>
+                      <td>{flag.raceName}</td>
+                      <td>
+                        "{flag.name}" appears twice in the results (place{" "}
+                        {flag.occurrences.map((o) => o.place).join(" and ")}, times{" "}
+                        {flag.occurrences.map((o) => o.timeDisplay).join(" and ")})
+                      </td>
+                      <td>Both entries kept as separate results, flagged for manual review</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <h3>Category Changes</h3>
+          <p>
+            Runners recorded under a different gender/age-category in different weeks, excluding a single clean move
+            to an older bracket that then holds for the rest of the season (treated as a genuine birthday, not
+            flagged). Each race is still scored with that week's recorded category as-is - nothing here is
+            auto-corrected.
+          </p>
+          {categoryChangesFlagged.length === 0 ? (
+            <div className="card">No cross-week category changes flagged.</div>
+          ) : (
+            <div className="card" style={{ padding: 0 }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Categories by week</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categoryChangesFlagged.map((flag, i) => (
+                    <tr key={i}>
+                      <td>{flag.name}</td>
+                      <td>{flag.occurrences.map((o) => `${o.raceName}: ${o.category}`).join("; ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="card">
+            <h3>Manual Data Refresh</h3>
+            <p>
+              This opens the "Weekly data refresh" workflow on GitHub. You'll need to be logged into GitHub with
+              access to this repo to actually click "Run workflow" there — the password above is just a casual gate
+              on this page, not real security, since anything shipped to a public site is visible to anyone who
+              looks.
+            </p>
+            <a className="btn" href={WORKFLOW_URL} target="_blank" rel="noreferrer">
+              Open GitHub Actions to Run Refresh
+            </a>
+          </div>
+
+          <h3>Scoring &amp; Data-Handling Logic</h3>
+          <p>Current approach for each scoring rule and data-handling decision, for reference while validating against the club.</p>
+          <div className="card" style={{ padding: 0 }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>Current approach</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {SCORING_LOGIC.map((row, i) => (
+                  <tr key={i}>
+                    <td style={{ whiteSpace: "nowrap" }}>{row.aspect}</td>
+                    <td>{row.approach}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
-
-      <h3>Category Changes</h3>
-      <p>
-        Runners recorded under a different gender/age-category in different weeks. Could be a genuine mid-season
-        age-category change (a birthday), a data-entry error on the source site, or two different people who happen
-        to share a name — each race is still scored with that week's recorded category as-is; nothing here is
-        auto-corrected.
-      </p>
-      {categoryChangesFlagged.length === 0 ? (
-        <div className="card">No cross-week category changes flagged.</div>
-      ) : (
-        <div className="card" style={{ padding: 0 }}>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Categories by week</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categoryChangesFlagged.map((flag, i) => (
-                <tr key={i}>
-                  <td>{flag.name}</td>
-                  <td>{flag.occurrences.map((o) => `${o.raceName}: ${o.category}`).join("; ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <AdminPanel />
-
-      <h3>Scoring &amp; Data-Handling Logic</h3>
-      <p>Current approach for each scoring rule and data-handling decision, for reference while validating against the club.</p>
-      <div className="card" style={{ padding: 0 }}>
-        <table>
-          <thead>
-            <tr>
-              <th>Aspect</th>
-              <th>Current approach</th>
-            </tr>
-          </thead>
-          <tbody>
-            {SCORING_LOGIC.map((row, i) => (
-              <tr key={i}>
-                <td style={{ whiteSpace: "nowrap" }}>{row.aspect}</td>
-                <td>{row.approach}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
