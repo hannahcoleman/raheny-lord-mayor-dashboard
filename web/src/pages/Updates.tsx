@@ -15,6 +15,10 @@ const SCORING_LOGIC: { aspect: string; approach: string }[] = [
     approach: "Sum of a runner's fastest 8 times out of the 13 numbered rounds. Requires 8+ races entered to qualify; lowest total wins.",
   },
   {
+    aspect: "League average",
+    approach: "League total divided by 8, shown for information only - ranking is always by League total, never by average.",
+  },
+  {
     aspect: "Series positions",
     approach: "Top 3 men, top 3 women, and each age-category winner, by League total, restricted to qualified (8+ race) runners.",
   },
