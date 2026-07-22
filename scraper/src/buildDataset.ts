@@ -32,6 +32,13 @@ async function main() {
 
   const aliases = loadAliases(ALIASES_PATH);
 
+  let confirmedJuvenileGenders: Record<string, string> = {};
+  try {
+    confirmedJuvenileGenders = JSON.parse(readFileSync(JUVENILE_GENDERS_PATH, "utf-8"));
+  } catch {
+    // no confirmed mapping yet
+  }
+
   let previousRecords: ResultRecord[] = [];
   try {
     previousRecords = JSON.parse(readFileSync(DATASET_PATH, "utf-8"));
@@ -75,8 +82,12 @@ async function main() {
   // Best-effort name-based gender guesses for Juveniles (source data never
   // records one) - advisory only. A human reviews these and copies confirmed
   // ones into juvenile-genders.json; nothing here is applied automatically.
+  // Names already confirmed there are excluded, so this file only ever shows
+  // new/unresolved names as future rounds bring in new juveniles.
   const juvenileNames = new Set(
-    allRecords.filter((r) => r.ageGroup === "Juvenile" && !r.isGenericEntry).map((r) => r.name)
+    allRecords
+      .filter((r) => r.ageGroup === "Juvenile" && !r.isGenericEntry && !(r.name in confirmedJuvenileGenders))
+      .map((r) => r.name)
   );
   const juvenileGenderSuggestions = Array.from(juvenileNames)
     .map((name) => ({ name, suggestedGender: inferGenderFromName(name) }))
