@@ -20,6 +20,7 @@ export default function WeeklyResults() {
   const [gender, setGender] = useState<Gender | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
+  const [search, setSearch] = useState("");
   const numbered = useMemo(() => numberedRecords(records), [records]);
   const roundNumbers = useMemo(
     () => Array.from(new Set(numbered.map((r) => r.roundNumber!))).sort((a, b) => a - b),
@@ -43,16 +44,19 @@ export default function WeeklyResults() {
     setGender("");
     setAgeGroup("");
     setClub("");
+    setSearch("");
   }, [activeRound]);
 
   if (loading) return <p>Loading results…</p>;
   if (error) return <p>Could not load data: {error}</p>;
   if (roundNumbers.length === 0) return <p>No rounds scraped yet.</p>;
 
+  const searchLower = search.trim().toLowerCase();
   const raceRecords = roundRecords
     .filter((r) => !gender || r.gender === gender)
     .filter((r) => !ageGroup || r.ageGroup === ageGroup)
     .filter((r) => !club || r.club === club)
+    .filter((r) => !searchLower || r.name.toLowerCase().includes(searchLower))
     .sort((a, b) => a.place - b.place);
   const highlights = getRaceHighlights(records, juvenileGenders).find((h) => h.roundNumber === activeRound);
   const winnerLabelFor = (name: string) => {
@@ -88,6 +92,13 @@ export default function WeeklyResults() {
         genders={genders}
         ageGroups={ageGroups}
         clubs={clubs}
+      />
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by name…"
+        style={{ marginBottom: "1rem", width: "100%", maxWidth: 300 }}
       />
       <p>
         <span className="pill podium-1" style={{ marginRight: 4 }}>
