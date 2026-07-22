@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import type { DuplicateFlag, RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
+import type { CategoryChangeFlag, DuplicateFlag, RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
 
 interface DatasetState {
   records: ResultRecord[];
   rounds: RoundMeta[];
   refreshLog: RefreshLogEntry[];
   duplicatesFlagged: DuplicateFlag[];
+  categoryChangesFlagged: CategoryChangeFlag[];
   loading: boolean;
   error: string | null;
 }
@@ -16,6 +17,7 @@ export function useDataset(): DatasetState {
     rounds: [],
     refreshLog: [],
     duplicatesFlagged: [],
+    categoryChangesFlagged: [],
     loading: true,
     error: null,
   });
@@ -28,9 +30,11 @@ export function useDataset(): DatasetState {
       fetch(`${base}rounds.json`).then((r) => r.json()),
       fetch(`${base}refresh-log.json`).then((r) => (r.ok ? r.json() : [])),
       fetch(`${base}duplicates-flagged.json`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${base}category-changes-flagged.json`).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([records, rounds, refreshLog, duplicatesFlagged]) => {
-        if (!cancelled) setState({ records, rounds, refreshLog, duplicatesFlagged, loading: false, error: null });
+      .then(([records, rounds, refreshLog, duplicatesFlagged, categoryChangesFlagged]) => {
+        if (!cancelled)
+          setState({ records, rounds, refreshLog, duplicatesFlagged, categoryChangesFlagged, loading: false, error: null });
       })
       .catch((err) => {
         if (!cancelled) setState((s) => ({ ...s, loading: false, error: String(err) }));

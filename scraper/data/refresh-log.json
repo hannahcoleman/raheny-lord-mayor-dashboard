@@ -1,5 +1,13 @@
 [
   {
+    "timestamp": "2026-07-22T07:26:39.238Z",
+    "roundsScraped": 8,
+    "newRaces": [
+      "Round 8 - John Fennell Cup"
+    ],
+    "changedRaces": []
+  },
+  {
     "timestamp": "2026-07-21T21:07:36.766Z",
     "roundsScraped": 7,
     "newRaces": [],

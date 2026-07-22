@@ -7,9 +7,9 @@ import { QUALIFICATION_THRESHOLD } from "../lib/types";
 
 const COURSE_MILES = 2;
 const COURSE_KM = COURSE_MILES * 1.609344;
-// Conservative floor for the chart's fastest axis tick - roughly world-record
-// two-mile pace (~8:00) - so it never auto-scales past a realistic time.
-const WORLD_RECORD_PACE_SECONDS = 480;
+// Floor for the chart's fastest axis tick, so it never auto-scales past this
+// regardless of how fast any single result is.
+const CHART_AXIS_FLOOR_SECONDS = 540; // 9:00
 
 function formatSeconds(total: number): string {
   const m = Math.floor(total / 60);
@@ -68,7 +68,7 @@ export default function RunnerProfile() {
             <XAxis dataKey="round" label={{ value: "Round", position: "insideBottom", offset: -5 }} />
             <YAxis
               reversed
-              domain={[WORLD_RECORD_PACE_SECONDS, (max: number) => max + 30]}
+              domain={[CHART_AXIS_FLOOR_SECONDS, (max: number) => max + 30]}
               tickFormatter={(v: number) => formatSeconds(v)}
               width={60}
               label={{ value: "Time", angle: -90, position: "insideLeft" }}

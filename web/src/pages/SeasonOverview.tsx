@@ -1,5 +1,5 @@
 import { useDataset } from "../lib/useDataset";
-import { getRaceHighlights, numberedRecords, runnerRecords } from "../lib/scoring";
+import { getRaceHighlights, numberedRecords } from "../lib/scoring";
 import { formatDisplayDate } from "../lib/date";
 import { PLANNED_SCHEDULE } from "../lib/schedule";
 import RunnerLink from "../components/RunnerLink";
@@ -11,11 +11,14 @@ export default function SeasonOverview() {
   if (error) return <p>Could not load data: {error}</p>;
 
   const highlights = getRaceHighlights(records);
+  // Includes generic "A Runner" entries - they took a real finishing place,
+  // so the count here matches the field-size totals shown elsewhere
+  // (Weekly Results / Runner Profile place-of-total).
   const finisherCounts = new Map<number, number>();
-  for (const r of runnerRecords(numberedRecords(records))) {
+  for (const r of numberedRecords(records)) {
     finisherCounts.set(r.roundNumber!, (finisherCounts.get(r.roundNumber!) ?? 0) + 1);
   }
-  const handicapFinishers = records.filter((r) => r.roundNumber === null && !r.isGenericEntry).length;
+  const handicapFinishers = records.filter((r) => r.roundNumber === null).length;
 
   const rows = PLANNED_SCHEDULE.map((planned) => {
     const round = planned.isHandicap

@@ -51,6 +51,11 @@ export interface DuplicateFlag {
   occurrences: { place: number; timeDisplay: string; category: string }[];
 }
 
+export interface CategoryChangeFlag {
+  name: string;
+  occurrences: { roundNumber: number | null; raceName: string; category: string }[];
+}
+
 export const NUMBERED_ROUNDS_TOTAL = 13;
 export const QUALIFICATION_THRESHOLD = 8;
 

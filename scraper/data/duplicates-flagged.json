@@ -49,5 +49,22 @@
         "category": "O/50 Women"
       }
     ]
+  },
+  {
+    "roundNumber": 8,
+    "raceName": "Round 8 - John Fennell Cup",
+    "name": "Paul Cullen",
+    "occurrences": [
+      {
+        "place": 32,
+        "timeDisplay": "14:00",
+        "category": "O/50 Men"
+      },
+      {
+        "place": 66,
+        "timeDisplay": "17:49",
+        "category": "O/50 Men"
+      }
+    ]
   }
 ]

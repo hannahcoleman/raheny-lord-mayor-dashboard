@@ -4,6 +4,55 @@ import { useDataset } from "../lib/useDataset";
 const ADMIN_PASSWORD_HASH = "c55ecb65733d09b012bdfb2bd943ec14c1e8c4845d4bf8d782db774e3cdebeec";
 const WORKFLOW_URL = "https://github.com/hannahcoleman/raheny-lord-mayor-dashboard/actions/workflows/scrape.yml";
 
+const SCORING_LOGIC: { aspect: string; approach: string }[] = [
+  { aspect: "Course distance", approach: "2 miles per race (fixed) - used to compute pace/mile and pace/km on runner profiles." },
+  {
+    aspect: "Overall leaderboard",
+    approach: "Each runner's single fastest time across all numbered rounds (1-13) entered. No minimum races required.",
+  },
+  {
+    aspect: "League leaderboard",
+    approach: "Sum of a runner's fastest 8 times out of the 13 numbered rounds. Requires 8+ races entered to qualify; lowest total wins.",
+  },
+  {
+    aspect: "Series positions",
+    approach: "Top 3 men, top 3 women, and each age-category winner, by League total, restricted to qualified (8+ race) runners.",
+  },
+  {
+    aspect: "Juvenile category",
+    approach:
+      "The source results never split Juvenile by gender, so it's scored as one combined category (no separate Juvenile Men/Women).",
+  },
+  {
+    aspect: "Round 14 (Jim Wall Memorial Handicap)",
+    approach: "Fully excluded from Overall, League, Series Positions, and Records - shown only on its own standalone page.",
+  },
+  { aspect: "Records - most podiums", approach: "Count of top-3 overall (by gender) finishes across the season, per runner." },
+  { aspect: "Records - most category wins", approach: "Count of age-category wins (1st in category in a single race) across the season, per runner." },
+  {
+    aspect: "Same-race duplicate names",
+    approach: "Both entries kept as scraped, never auto-merged or dropped. Listed in Data Integrity Issues above for manual review.",
+  },
+  {
+    aspect: "Cross-week category changes",
+    approach:
+      "Each race is scored using that week's recorded category as-is, with no auto-correction. Listed in Category Changes above for manual review - could be a genuine age-category change, a data-entry error, or two people sharing a name.",
+  },
+  {
+    aspect: 'Generic "A Runner" entries',
+    approach: "Excluded from all individual leaderboards, records, and runner profiles, but counted toward each race's total finisher count.",
+  },
+  {
+    aspect: "Name variants / typos",
+    approach: "Manual mapping only (aliases.json). Likely matches are suggested from the data but never auto-applied.",
+  },
+  {
+    aspect: "Malformed or ambiguous times",
+    approach:
+      'A single-digit-seconds time (e.g. "14.4") is assumed to be missing a trailing zero and logged as such. Otherwise-unparseable times are excluded from time-based rankings but still shown in the raw weekly results.',
+  },
+];
+
 async function sha256Hex(text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
   const digest = await crypto.subtle.digest("SHA-256", data);
@@ -74,7 +123,7 @@ function AdminPanel() {
 }
 
 export default function Updates() {
-  const { refreshLog, duplicatesFlagged, loading, error } = useDataset();
+  const { refreshLog, duplicatesFlagged, categoryChangesFlagged, loading, error } = useDataset();
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
@@ -121,7 +170,7 @@ export default function Updates() {
         auto-resolved - both entries are kept in the dataset as scraped until reviewed by hand.
       </p>
       {duplicatesFlagged.length === 0 ? (
-        <div className="card">No data integrity issues flagged.</div>
+        <div className="card">No same-race duplicate entries flagged.</div>
       ) : (
         <div className="card" style={{ padding: 0 }}>
           <table>
@@ -148,7 +197,58 @@ export default function Updates() {
         </div>
       )}
 
+      <h3>Category Changes</h3>
+      <p>
+        Runners recorded under a different gender/age-category in different weeks. Could be a genuine mid-season
+        age-category change (a birthday), a data-entry error on the source site, or two different people who happen
+        to share a name — each race is still scored with that week's recorded category as-is; nothing here is
+        auto-corrected.
+      </p>
+      {categoryChangesFlagged.length === 0 ? (
+        <div className="card">No cross-week category changes flagged.</div>
+      ) : (
+        <div className="card" style={{ padding: 0 }}>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Categories by week</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categoryChangesFlagged.map((flag, i) => (
+                <tr key={i}>
+                  <td>{flag.name}</td>
+                  <td>{flag.occurrences.map((o) => `${o.raceName}: ${o.category}`).join("; ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <AdminPanel />
+
+      <h3>Scoring &amp; Data-Handling Logic</h3>
+      <p>Current approach for each scoring rule and data-handling decision, for reference while validating against the club.</p>
+      <div className="card" style={{ padding: 0 }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Current approach</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SCORING_LOGIC.map((row, i) => (
+              <tr key={i}>
+                <td style={{ whiteSpace: "nowrap" }}>{row.aspect}</td>
+                <td>{row.approach}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

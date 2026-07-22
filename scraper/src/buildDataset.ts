@@ -4,6 +4,7 @@ import { parseRoundPage } from "./parseRound.js";
 import { isGenericEntry, parseCategory, parseTimeToSeconds, formatSecondsAsTime } from "./normalize.js";
 import { loadAliases, applyAlias, suggestAliases } from "./aliases.js";
 import { flagDuplicates } from "./flagDuplicates.js";
+import { flagCategoryChanges } from "./flagCategoryChanges.js";
 import { buildRefreshLogEntry, type RefreshLogEntry } from "./refreshLog.js";
 import type { ResultRecord, RoundMeta } from "./types.js";
 
@@ -63,6 +64,7 @@ async function main() {
   }
 
   const duplicates = flagDuplicates(allRecords);
+  const categoryChanges = flagCategoryChanges(allRecords);
   const suggestions = suggestAliases(
     allRecords.filter((r) => !r.isGenericEntry).map((r) => r.name),
     aliases
@@ -71,6 +73,7 @@ async function main() {
   writeFileSync(DATASET_PATH, JSON.stringify(allRecords, null, 2));
   writeFileSync(new URL("rounds.json", DATA_DIR), JSON.stringify(rounds, null, 2));
   writeFileSync(new URL("duplicates-flagged.json", DATA_DIR), JSON.stringify(duplicates, null, 2));
+  writeFileSync(new URL("category-changes-flagged.json", DATA_DIR), JSON.stringify(categoryChanges, null, 2));
   writeFileSync(new URL("alias-suggestions.json", DATA_DIR), JSON.stringify(suggestions, null, 2));
 
   const logEntry = buildRefreshLogEntry(previousRecords, allRecords, rounds.length);
@@ -93,6 +96,7 @@ async function main() {
 
   console.log(`Done. ${allRecords.length} result rows across ${rounds.length} races.`);
   console.log(`${duplicates.length} same-race duplicate name(s) flagged for review in duplicates-flagged.json.`);
+  console.log(`${categoryChanges.length} runner(s) with a cross-week category change flagged in category-changes-flagged.json.`);
   console.log(`${suggestions.length} possible-alias suggestion(s) in alias-suggestions.json.`);
   console.log(
     `Refresh log: ${logEntry.newRaces.length} new race(s), ${logEntry.changedRaces.length} changed race(s) since last scrape.`
