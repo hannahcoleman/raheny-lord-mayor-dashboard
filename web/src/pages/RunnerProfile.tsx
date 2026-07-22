@@ -5,10 +5,20 @@ import { useDataset } from "../lib/useDataset";
 import { getRunnerProfile, getRacePlacements, racePlacementKey } from "../lib/scoring";
 import { QUALIFICATION_THRESHOLD } from "../lib/types";
 
+const COURSE_MILES = 2;
+const COURSE_KM = COURSE_MILES * 1.609344;
+// Conservative floor for the chart's fastest axis tick - roughly world-record
+// two-mile pace (~8:00) - so it never auto-scales past a realistic time.
+const WORLD_RECORD_PACE_SECONDS = 480;
+
 function formatSeconds(total: number): string {
   const m = Math.floor(total / 60);
   const s = total % 60;
   return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function formatPace(totalSeconds: number, distance: number, unit: "mi" | "km"): string {
+  return `${formatSeconds(Math.round(totalSeconds / distance))}/${unit}`;
 }
 
 export default function RunnerProfile() {
@@ -58,6 +68,7 @@ export default function RunnerProfile() {
             <XAxis dataKey="round" label={{ value: "Round", position: "insideBottom", offset: -5 }} />
             <YAxis
               reversed
+              domain={[WORLD_RECORD_PACE_SECONDS, (max: number) => max + 30]}
               tickFormatter={(v: number) => formatSeconds(v)}
               width={60}
               label={{ value: "Time", angle: -90, position: "insideLeft" }}
@@ -109,6 +120,8 @@ export default function RunnerProfile() {
               <th>Gender Place</th>
               <th>Category</th>
               <th>Time</th>
+              <th>Pace/mile</th>
+              <th>Pace/km</th>
             </tr>
           </thead>
           <tbody>
@@ -123,6 +136,8 @@ export default function RunnerProfile() {
                   <td>{placement ? `${placement.genderRank}/${placement.genderTotal}` : "—"}</td>
                   <td>{r.category}</td>
                   <td>{r.timeDisplay}</td>
+                  <td>{r.timeSeconds !== null ? formatPace(r.timeSeconds, COURSE_MILES, "mi") : "—"}</td>
+                  <td>{r.timeSeconds !== null ? formatPace(r.timeSeconds, COURSE_KM, "km") : "—"}</td>
                 </tr>
               );
             })}

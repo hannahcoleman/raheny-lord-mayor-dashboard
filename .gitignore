@@ -4,5 +4,6 @@ scraper/dist/
 web/public/dataset.json
 web/public/rounds.json
 web/public/refresh-log.json
+web/public/duplicates-flagged.json
 .DS_Store
 *.log

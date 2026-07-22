@@ -74,7 +74,7 @@ function AdminPanel() {
 }
 
 export default function Updates() {
-  const { refreshLog, loading, error } = useDataset();
+  const { refreshLog, duplicatesFlagged, loading, error } = useDataset();
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
@@ -108,6 +108,39 @@ export default function Updates() {
                   <td>{entry.roundsScraped}</td>
                   <td>{entry.newRaces.length > 0 ? entry.newRaces.join(", ") : "—"}</td>
                   <td>{entry.changedRaces.length > 0 ? entry.changedRaces.join(", ") : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h3>Data Integrity Issues</h3>
+      <p>
+        Problems found in the source results tables while scraping, and how each was handled. These are never
+        auto-resolved - both entries are kept in the dataset as scraped until reviewed by hand.
+      </p>
+      {duplicatesFlagged.length === 0 ? (
+        <div className="card">No data integrity issues flagged.</div>
+      ) : (
+        <div className="card" style={{ padding: 0 }}>
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Issue</th>
+                <th>Approach taken</th>
+              </tr>
+            </thead>
+            <tbody>
+              {duplicatesFlagged.map((flag, i) => (
+                <tr key={i}>
+                  <td>{flag.raceName}</td>
+                  <td>
+                    "{flag.name}" appears twice in the results (place {flag.occurrences.map((o) => o.place).join(" and ")},
+                    times {flag.occurrences.map((o) => o.timeDisplay).join(" and ")})
+                  </td>
+                  <td>Both entries kept as separate results, flagged for manual review</td>
                 </tr>
               ))}
             </tbody>

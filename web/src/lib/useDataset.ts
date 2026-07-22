@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import type { RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
+import type { DuplicateFlag, RefreshLogEntry, ResultRecord, RoundMeta } from "./types";
 
 interface DatasetState {
   records: ResultRecord[];
   rounds: RoundMeta[];
   refreshLog: RefreshLogEntry[];
+  duplicatesFlagged: DuplicateFlag[];
   loading: boolean;
   error: string | null;
 }
@@ -14,6 +15,7 @@ export function useDataset(): DatasetState {
     records: [],
     rounds: [],
     refreshLog: [],
+    duplicatesFlagged: [],
     loading: true,
     error: null,
   });
@@ -25,9 +27,10 @@ export function useDataset(): DatasetState {
       fetch(`${base}dataset.json`).then((r) => r.json()),
       fetch(`${base}rounds.json`).then((r) => r.json()),
       fetch(`${base}refresh-log.json`).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${base}duplicates-flagged.json`).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([records, rounds, refreshLog]) => {
-        if (!cancelled) setState({ records, rounds, refreshLog, loading: false, error: null });
+      .then(([records, rounds, refreshLog, duplicatesFlagged]) => {
+        if (!cancelled) setState({ records, rounds, refreshLog, duplicatesFlagged, loading: false, error: null });
       })
       .catch((err) => {
         if (!cancelled) setState((s) => ({ ...s, loading: false, error: String(err) }));

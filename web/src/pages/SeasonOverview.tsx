@@ -41,7 +41,7 @@ export default function SeasonOverview() {
           </thead>
           <tbody>
             {rows.map(({ planned, round, highlight }) => (
-              <tr key={planned.roundNumber}>
+              <tr key={planned.roundNumber} style={planned.isHandicap ? { borderTop: "2px solid var(--rs-green)" } : undefined}>
                 <td>
                   Round {planned.roundNumber}
                   {planned.cupName && <div className="pill">{planned.cupName}</div>}

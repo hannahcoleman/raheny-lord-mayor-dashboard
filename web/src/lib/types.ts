@@ -44,6 +44,13 @@ export interface RefreshLogEntry {
   changedRaces: string[];
 }
 
+export interface DuplicateFlag {
+  roundNumber: number | null;
+  raceName: string;
+  name: string;
+  occurrences: { place: number; timeDisplay: string; category: string }[];
+}
+
 export const NUMBERED_ROUNDS_TOTAL = 13;
 export const QUALIFICATION_THRESHOLD = 8;
 
