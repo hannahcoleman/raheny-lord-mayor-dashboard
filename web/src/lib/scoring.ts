@@ -112,6 +112,7 @@ export interface LeagueLeaderboardEntry {
   qualified: boolean;
   leagueTotalSeconds: number | null;
   leagueTotalDisplay: string | null;
+  leagueAverageDisplay: string | null;
   countedRaces: { roundNumber: number | null; raceName: string; timeSeconds: number }[];
 }
 
@@ -143,6 +144,7 @@ export function getLeagueLeaderboard(records: ResultRecord[]): LeagueLeaderboard
       qualified,
       leagueTotalSeconds: total,
       leagueTotalDisplay: total !== null ? formatSeconds(total) : null,
+      leagueAverageDisplay: total !== null ? formatSeconds(Math.round(total / QUALIFICATION_THRESHOLD)) : null,
       countedRaces: counted.map((r) => ({ roundNumber: r.roundNumber, raceName: r.raceName, timeSeconds: r.timeSeconds! })),
     });
   }

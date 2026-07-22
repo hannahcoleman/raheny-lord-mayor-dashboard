@@ -57,6 +57,7 @@ export default function LeagueLeaderboard() {
               <th>Category</th>
               <th>Races</th>
               <th>League total</th>
+              <th>League average</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +71,7 @@ export default function LeagueLeaderboard() {
                 <td>{e.gender !== "Unspecified" ? `${e.ageGroup ?? ""} ${e.gender}`.trim() : e.ageGroup}</td>
                 <td>{e.racesEntered}</td>
                 <td>{e.leagueTotalDisplay}</td>
+                <td>{e.leagueAverageDisplay}</td>
               </tr>
             ))}
           </tbody>
