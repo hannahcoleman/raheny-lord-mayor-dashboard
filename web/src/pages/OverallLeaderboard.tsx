@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
-import { getClubs, getOverallLeaderboard } from "../lib/scoring";
+import { getAvailableAgeGroups, getAvailableGenders, getClubs, getOverallLeaderboard } from "../lib/scoring";
 import type { AgeGroup, Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
@@ -12,6 +12,8 @@ export default function OverallLeaderboard() {
   const [club, setClub] = useState<string>("");
 
   const clubs = useMemo(() => getClubs(records), [records]);
+  const genders = useMemo(() => getAvailableGenders(records), [records]);
+  const ageGroups = useMemo(() => getAvailableAgeGroups(records), [records]);
   const leaderboard = useMemo(
     () =>
       getOverallLeaderboard(records, {
@@ -36,6 +38,8 @@ export default function OverallLeaderboard() {
         onAgeGroupChange={setAgeGroup}
         club={club}
         onClubChange={setClub}
+        genders={genders}
+        ageGroups={ageGroups}
         clubs={clubs}
       />
       <div className="card" style={{ padding: 0 }}>

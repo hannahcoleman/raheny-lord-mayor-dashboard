@@ -28,14 +28,6 @@ export default function SeasonOverview() {
   return (
     <div>
       <h2>Season Overview</h2>
-      <p>
-        {rounds.filter((r) => !r.isHandicap).length} of 13 numbered rounds run so far this season. Dates for rounds
-        not yet run are planned dates from{" "}
-        <a href="https://eventmaster.ie/event/R1L7CL5h76" target="_blank" rel="noreferrer">
-          Eventmaster
-        </a>{" "}
-        and may shift.
-      </p>
       <div className="card" style={{ padding: 0 }}>
         <table>
           <thead>
@@ -49,26 +41,23 @@ export default function SeasonOverview() {
           </thead>
           <tbody>
             {rows.map(({ planned, round, highlight }) => (
-              <tr key={planned.isHandicap ? "handicap" : planned.roundNumber} style={planned.isHandicap ? { borderTop: "2px solid var(--rs-green)" } : undefined}>
+              <tr key={planned.roundNumber}>
                 <td>
-                  {planned.isHandicap ? "Jim Wall Memorial Handicap" : `Round ${planned.roundNumber}`}
+                  Round {planned.roundNumber}
                   {planned.cupName && <div className="pill">{planned.cupName}</div>}
                 </td>
+                <td>{formatDisplayDate(planned.plannedDate)}</td>
+                <td>{highlight?.podiumMen[0] ? <RunnerLink name={highlight.podiumMen[0]} /> : round ? "—" : "Not yet run"}</td>
+                <td>{highlight?.podiumWomen[0] ? <RunnerLink name={highlight.podiumWomen[0]} /> : round ? "—" : "Not yet run"}</td>
                 <td>
-                  {formatDisplayDate(round?.date ?? planned.plannedDate)}
-                  {!round && <span style={{ opacity: 0.6 }}> (planned)</span>}
+                  {planned.isHandicap
+                    ? round
+                      ? handicapFinishers
+                      : "—"
+                    : round
+                      ? finisherCounts.get(planned.roundNumber!) ?? 0
+                      : "—"}
                 </td>
-                {planned.isHandicap ? (
-                  <td colSpan={2} style={{ opacity: 0.7 }}>
-                    {round ? "See Jim Wall Handicap page" : "Not yet run — standalone, not part of series scoring"}
-                  </td>
-                ) : (
-                  <>
-                    <td>{highlight?.podiumMen[0] ? <RunnerLink name={highlight.podiumMen[0]} /> : round ? "—" : "Not yet run"}</td>
-                    <td>{highlight?.podiumWomen[0] ? <RunnerLink name={highlight.podiumWomen[0]} /> : round ? "—" : "Not yet run"}</td>
-                  </>
-                )}
-                <td>{planned.isHandicap ? (round ? handicapFinishers : "—") : round ? finisherCounts.get(planned.roundNumber!) ?? 0 : "—"}</td>
               </tr>
             ))}
           </tbody>

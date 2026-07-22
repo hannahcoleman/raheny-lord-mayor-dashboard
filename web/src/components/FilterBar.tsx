@@ -1,4 +1,4 @@
-import { ADULT_AGE_GROUPS, type AgeGroup, type Gender } from "../lib/types";
+import type { AgeGroup, Gender } from "../lib/types";
 
 export interface FilterBarProps {
   gender: Gender | "";
@@ -7,6 +7,8 @@ export interface FilterBarProps {
   onAgeGroupChange: (v: AgeGroup | "") => void;
   club: string;
   onClubChange: (v: string) => void;
+  genders: Gender[];
+  ageGroups: AgeGroup[];
   clubs: string[];
 }
 
@@ -17,18 +19,23 @@ export default function FilterBar({
   onAgeGroupChange,
   club,
   onClubChange,
+  genders,
+  ageGroups,
   clubs,
 }: FilterBarProps) {
   return (
     <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
       <select value={gender} onChange={(e) => onGenderChange(e.target.value as Gender | "")}>
         <option value="">All genders</option>
-        <option value="Men">Men</option>
-        <option value="Women">Women</option>
+        {genders.map((g) => (
+          <option key={g} value={g}>
+            {g}
+          </option>
+        ))}
       </select>
       <select value={ageGroup} onChange={(e) => onAgeGroupChange(e.target.value as AgeGroup | "")}>
         <option value="">All age groups</option>
-        {[...ADULT_AGE_GROUPS, "Juvenile" as const].map((ag) => (
+        {ageGroups.map((ag) => (
           <option key={ag} value={ag}>
             {ag}
           </option>

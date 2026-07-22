@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
-import { getClubs, getLeagueLeaderboard } from "../lib/scoring";
+import { getAvailableAgeGroups, getAvailableGenders, getClubs, getLeagueLeaderboard } from "../lib/scoring";
 import { QUALIFICATION_THRESHOLD, type AgeGroup, type Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
@@ -12,6 +12,8 @@ export default function LeagueLeaderboard() {
   const [club, setClub] = useState<string>("");
 
   const clubs = useMemo(() => getClubs(records), [records]);
+  const genders = useMemo(() => getAvailableGenders(records), [records]);
+  const ageGroups = useMemo(() => getAvailableAgeGroups(records), [records]);
   const league = useMemo(() => getLeagueLeaderboard(records), [records]);
   const filtered = useMemo(
     () =>
@@ -41,6 +43,8 @@ export default function LeagueLeaderboard() {
         onAgeGroupChange={setAgeGroup}
         club={club}
         onClubChange={setClub}
+        genders={genders}
+        ageGroups={ageGroups}
         clubs={clubs}
       />
       <div className="card" style={{ padding: 0 }}>

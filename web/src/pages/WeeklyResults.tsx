@@ -1,6 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
-import { getClubs, getRaceHighlights, getRacePlacements, numberedRecords, racePlacementKey } from "../lib/scoring";
+import {
+  getAvailableAgeGroups,
+  getAvailableGenders,
+  getClubs,
+  getRaceHighlights,
+  getRacePlacements,
+  numberedRecords,
+  racePlacementKey,
+} from "../lib/scoring";
 import type { AgeGroup, Gender } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
@@ -18,14 +26,25 @@ export default function WeeklyResults() {
   const [selected, setSelected] = useState<number | null>(null);
   const activeRound = selected ?? roundNumbers[roundNumbers.length - 1] ?? null;
   const placements = useMemo(() => getRacePlacements(records), [records]);
-  const clubs = useMemo(() => getClubs(records), [records]);
+
+  const roundRecords = useMemo(() => numbered.filter((r) => r.roundNumber === activeRound), [numbered, activeRound]);
+  const clubs = useMemo(() => getClubs(roundRecords), [roundRecords]);
+  const genders = useMemo(() => getAvailableGenders(roundRecords), [roundRecords]);
+  const ageGroups = useMemo(() => getAvailableAgeGroups(roundRecords), [roundRecords]);
+
+  // Reset filters when switching rounds so a selection that no longer applies
+  // (e.g. a club with no runners this week) doesn't linger as an invalid value.
+  useEffect(() => {
+    setGender("");
+    setAgeGroup("");
+    setClub("");
+  }, [activeRound]);
 
   if (loading) return <p>Loading results…</p>;
   if (error) return <p>Could not load data: {error}</p>;
   if (roundNumbers.length === 0) return <p>No rounds scraped yet.</p>;
 
-  const raceRecords = numbered
-    .filter((r) => r.roundNumber === activeRound)
+  const raceRecords = roundRecords
     .filter((r) => !gender || r.gender === gender)
     .filter((r) => !ageGroup || r.ageGroup === ageGroup)
     .filter((r) => !club || r.club === club)
@@ -61,6 +80,8 @@ export default function WeeklyResults() {
         onAgeGroupChange={setAgeGroup}
         club={club}
         onClubChange={setClub}
+        genders={genders}
+        ageGroups={ageGroups}
         clubs={clubs}
       />
       <p>

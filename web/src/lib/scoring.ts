@@ -87,6 +87,22 @@ export function getClubs(records: ResultRecord[]): string[] {
   return Array.from(clubs).sort((a, b) => a.localeCompare(b));
 }
 
+/** Men/Women only present if at least one runner in the dataset has that gender. */
+export function getAvailableGenders(records: ResultRecord[]): Gender[] {
+  const pool = runnerRecords(numberedRecords(records));
+  const options: Gender[] = [];
+  if (pool.some((r) => r.gender === "Men")) options.push("Men");
+  if (pool.some((r) => r.gender === "Women")) options.push("Women");
+  return options;
+}
+
+/** Age groups present in the dataset, in the standard Senior->O/75->Juvenile order. */
+export function getAvailableAgeGroups(records: ResultRecord[]): AgeGroup[] {
+  const pool = runnerRecords(numberedRecords(records));
+  const present = new Set(pool.map((r) => r.ageGroup).filter((a): a is AgeGroup => a !== null));
+  return [...ADULT_AGE_GROUPS, "Juvenile" as const].filter((ag) => present.has(ag));
+}
+
 export interface LeagueLeaderboardEntry {
   name: string;
   club: string;
