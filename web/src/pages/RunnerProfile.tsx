@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useDataset } from "../lib/useDataset";
 import { getRunnerProfile, getRacePlacements, racePlacementKey } from "../lib/scoring";
@@ -96,7 +96,7 @@ export default function RunnerProfile() {
             <tbody>
               {profile.trophies.map((t, i) => (
                 <tr key={i}>
-                  <td>{t.raceName}</td>
+                  <td>{t.roundNumber ? <Link to={`/results/${t.roundNumber}`}>{t.raceName}</Link> : t.raceName}</td>
                   <td>
                     {t.achievements.map((a, j) => (
                       <div key={j}>{a.type}</div>
@@ -133,7 +133,7 @@ export default function RunnerProfile() {
               const placement = placements.get(racePlacementKey(r));
               return (
                 <tr key={i}>
-                  <td>{r.raceName}</td>
+                  <td>{r.roundNumber ? <Link to={`/results/${r.roundNumber}`}>{r.raceName}</Link> : r.raceName}</td>
                   <td>
                     {r.place}/{placement?.totalFinishers ?? "—"}
                   </td>

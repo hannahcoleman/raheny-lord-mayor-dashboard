@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useDataset } from "../lib/useDataset";
 import { getAvailableAgeGroups, getAvailableGenders, getClubs, getOverallLeaderboard } from "../lib/scoring";
 import type { AgeGroup, Gender } from "../lib/types";
@@ -78,7 +79,7 @@ export default function OverallLeaderboard() {
                   {e.gender !== "Unspecified" ? `${e.ageGroup ?? ""} ${e.gender}`.trim() : e.ageGroup}
                 </td>
                 <td>{e.bestTimeDisplay}</td>
-                <td>{e.raceName}</td>
+                <td>{e.roundNumber ? <Link to={`/results/${e.roundNumber}`}>{e.raceName}</Link> : e.raceName}</td>
               </tr>
             ))}
           </tbody>
