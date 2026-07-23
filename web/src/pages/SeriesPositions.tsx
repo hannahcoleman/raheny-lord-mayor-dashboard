@@ -17,7 +17,7 @@ export default function SeriesPositions() {
     <div>
       <h2>Series Positions</h2>
       <p>
-        Top 3 men, top 3 women, and each age-category winner, based on League scoring and restricted to athletes who've
+        Top 3 men, top 3 women, and each age-category leaders, based on League scoring and restricted to athletes who've
         completed at least {QUALIFICATION_THRESHOLD} of the 13 numbered rounds.
       </p>
       {noneQualifiedYet && (
@@ -47,7 +47,7 @@ export default function SeriesPositions() {
       </div>
 
       <div className="card">
-        <h3>Age Category Winners</h3>
+        <h3>Age Category Leaders</h3>
         <table>
           <thead>
             <tr>
