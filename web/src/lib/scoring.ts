@@ -116,10 +116,11 @@ export interface LeagueLeaderboardEntry {
   qualified: boolean;
   eligible: boolean;
   maxPossibleRaces: number;
+  points: number | null;
   leagueTotalSeconds: number | null;
   leagueTotalDisplay: string | null;
   leagueAverageDisplay: string | null;
-  countedRaces: { roundNumber: number | null; raceName: string; timeSeconds: number }[];
+  countedRaces: { roundNumber: number | null; raceName: string; place: number; timeSeconds: number }[];
 }
 
 function formatSeconds(total: number): string {
@@ -129,10 +130,15 @@ function formatSeconds(total: number): string {
 }
 
 /**
- * Sum of each qualifying athlete's fastest 8-of-13 times. Athletes under 8
- * races are still returned, unranked, with progress info - unless the
- * remaining rounds in the season are too few for them to reach 8 races even
- * if they ran every one of them, in which case they're marked ineligible.
+ * Points = sum of each qualifying athlete's best-8-of-13 finishing PLACES
+ * (literal race-day place, lowest wins) - the club's own historical scoring
+ * method, confirmed from its 2025 season write-ups. Total/average time are
+ * derived from those same 8 scoring races (the ones with the best places),
+ * not independently from the 8 fastest times - the two selections can differ.
+ * Ties on points are broken by total time. Athletes under 8 races are still
+ * returned, unranked, with progress info - unless the remaining rounds in the
+ * season are too few for them to reach 8 races even if they ran every one of
+ * them, in which case they're marked ineligible.
  */
 export function getLeagueLeaderboard(records: ResultRecord[]): LeagueLeaderboardEntry[] {
   const pool = runnerRecords(numberedRecords(records)).filter((r) => r.timeSeconds !== null);
@@ -144,11 +150,12 @@ export function getLeagueLeaderboard(records: ResultRecord[]): LeagueLeaderboard
   const entries: LeagueLeaderboardEntry[] = [];
   for (const [name, races] of byName) {
     const { gender, ageGroup } = modeCategory(races);
-    const sorted = [...races].sort((a, b) => a.timeSeconds! - b.timeSeconds!);
+    const sorted = [...races].sort((a, b) => a.place - b.place);
     const qualified = races.length >= QUALIFICATION_THRESHOLD;
     const maxPossibleRaces = races.length + roundsRemaining;
     const eligible = qualified || maxPossibleRaces >= QUALIFICATION_THRESHOLD;
     const counted = qualified ? sorted.slice(0, QUALIFICATION_THRESHOLD) : [];
+    const points = qualified ? counted.reduce((sum, r) => sum + r.place, 0) : null;
     const total = qualified ? counted.reduce((sum, r) => sum + r.timeSeconds!, 0) : null;
 
     entries.push({
@@ -160,15 +167,19 @@ export function getLeagueLeaderboard(records: ResultRecord[]): LeagueLeaderboard
       qualified,
       eligible,
       maxPossibleRaces,
+      points,
       leagueTotalSeconds: total,
       leagueTotalDisplay: total !== null ? formatSeconds(total) : null,
       leagueAverageDisplay: total !== null ? formatSeconds(Math.round(total / QUALIFICATION_THRESHOLD)) : null,
-      countedRaces: counted.map((r) => ({ roundNumber: r.roundNumber, raceName: r.raceName, timeSeconds: r.timeSeconds! })),
+      countedRaces: counted.map((r) => ({ roundNumber: r.roundNumber, raceName: r.raceName, place: r.place, timeSeconds: r.timeSeconds! })),
     });
   }
 
   return entries.sort((a, b) => {
-    if (a.qualified && b.qualified) return a.leagueTotalSeconds! - b.leagueTotalSeconds!;
+    if (a.qualified && b.qualified) {
+      if (a.points! !== b.points!) return a.points! - b.points!;
+      return a.leagueTotalSeconds! - b.leagueTotalSeconds!;
+    }
     if (a.qualified) return -1;
     if (b.qualified) return 1;
     return b.racesEntered - a.racesEntered;

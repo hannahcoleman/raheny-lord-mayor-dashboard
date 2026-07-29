@@ -39,6 +39,8 @@ export default function RunnerProfile() {
     .filter((r) => r.timeSeconds !== null)
     .map((r) => ({ round: r.roundNumber, timeSeconds: r.timeSeconds, label: r.timeDisplay }));
 
+  const countedRounds = new Set((profile.league?.countedRaces ?? []).map((r) => r.roundNumber));
+
   return (
     <div>
       <h2>{profile.name}</h2>
@@ -54,17 +56,17 @@ export default function RunnerProfile() {
           <h3 style={{ margin: "0.4rem 0 0" }}>{profile.attendance} of 13</h3>
         </div>
         <div className="card" style={{ flex: 1, minWidth: 160 }}>
-          <div className="pill">League total</div>
+          <div className="pill">League points</div>
           <h3 style={{ margin: "0.4rem 0 0" }}>
             {profile.league?.qualified
-              ? profile.league.leagueTotalDisplay
+              ? `${profile.league.points} pts`
               : profile.league?.eligible === false
                 ? "Not eligible"
                 : `${profile.league?.racesEntered ?? 0} of ${QUALIFICATION_THRESHOLD}`}
           </h3>
           {profile.league?.qualified && (
             <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", opacity: 0.7 }}>
-              avg {profile.league.leagueAverageDisplay}
+              {profile.league.leagueTotalDisplay} total &middot; avg {profile.league.leagueAverageDisplay}
             </p>
           )}
           {profile.league?.eligible === false && (
@@ -138,11 +140,13 @@ export default function RunnerProfile() {
               <th>Time</th>
               <th>Pace/mile</th>
               <th>Pace/km</th>
+              <th>League points</th>
             </tr>
           </thead>
           <tbody>
             {profile.races.map((r, i) => {
               const placement = placements.get(racePlacementKey(r));
+              const counted = countedRounds.has(r.roundNumber);
               return (
                 <tr key={i}>
                   <td>{r.roundNumber ? <Link to={`/results/${r.roundNumber}`}>{r.raceName}</Link> : r.raceName}</td>
@@ -155,6 +159,14 @@ export default function RunnerProfile() {
                   <td>{r.timeDisplay}</td>
                   <td>{r.timeSeconds !== null ? formatPace(r.timeSeconds, COURSE_MILES, "mi") : "—"}</td>
                   <td>{r.timeSeconds !== null ? formatPace(r.timeSeconds, COURSE_KM, "km") : "—"}</td>
+                  <td>
+                    {r.timeSeconds !== null ? r.place : "—"}
+                    {counted && (
+                      <span className="pill" style={{ marginLeft: "0.4rem", fontSize: "0.7rem" }}>
+                        counted
+                      </span>
+                    )}
+                  </td>
                 </tr>
               );
             })}

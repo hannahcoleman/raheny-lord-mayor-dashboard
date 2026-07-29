@@ -17,8 +17,9 @@ export default function SeriesPositions() {
     <div>
       <h2>Series Positions</h2>
       <p>
-        Top 3 men, top 3 women, and each age-category leaders, based on League scoring and restricted to athletes who've
-        completed at least {QUALIFICATION_THRESHOLD} of the 13 numbered rounds.
+        Top 3 men, top 3 women, and each age-category leaders, ranked by League points (best {QUALIFICATION_THRESHOLD}{" "}
+        finishing places, lowest total wins) and restricted to athletes who've completed at least {QUALIFICATION_THRESHOLD}{" "}
+        of the 13 numbered rounds.
       </p>
       {noneQualifiedYet && (
         <div className="card">No one has reached the {QUALIFICATION_THRESHOLD}-race qualification threshold yet this season.</div>
@@ -29,7 +30,7 @@ export default function SeriesPositions() {
         <ol>
           {positions.topMen.map((e) => (
             <li key={e.name}>
-              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay} (avg {e.leagueAverageDisplay})
+              <RunnerLink name={e.name} /> — {e.points} pts ({e.leagueTotalDisplay}, avg {e.leagueAverageDisplay})
             </li>
           ))}
         </ol>
@@ -40,7 +41,7 @@ export default function SeriesPositions() {
         <ol>
           {positions.topWomen.map((e) => (
             <li key={e.name}>
-              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay} (avg {e.leagueAverageDisplay})
+              <RunnerLink name={e.name} /> — {e.points} pts ({e.leagueTotalDisplay}, avg {e.leagueAverageDisplay})
             </li>
           ))}
         </ol>
@@ -53,7 +54,8 @@ export default function SeriesPositions() {
             <tr>
               <th>Category</th>
               <th>Leader</th>
-              <th>League total</th>
+              <th>Points</th>
+              <th>Total time</th>
               <th>Average time</th>
             </tr>
           </thead>
@@ -66,6 +68,7 @@ export default function SeriesPositions() {
                 <td>
                   <RunnerLink name={c.winner.name} />
                 </td>
+                <td>{c.winner.points}</td>
                 <td>{c.winner.leagueTotalDisplay}</td>
                 <td>{c.winner.leagueAverageDisplay}</td>
               </tr>
@@ -76,6 +79,7 @@ export default function SeriesPositions() {
                 <td>
                   <RunnerLink name={positions.juvenileWinner.name} />
                 </td>
+                <td>{positions.juvenileWinner.points}</td>
                 <td>{positions.juvenileWinner.leagueTotalDisplay}</td>
                 <td>{positions.juvenileWinner.leagueAverageDisplay}</td>
               </tr>

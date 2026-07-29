@@ -42,8 +42,10 @@ export default function LeagueLeaderboard() {
     <div>
       <h2>League Leaderboard</h2>
       <p>
-        Sum of each qualifying athlete's fastest {QUALIFICATION_THRESHOLD} times out of 13 numbered rounds. Lowest total wins.
-        Athletes need at least {QUALIFICATION_THRESHOLD} races to qualify.
+        Ranked by points: sum of each qualifying athlete's finishing place across their best {QUALIFICATION_THRESHOLD} races
+        (out of 13 numbered rounds) - lowest points total wins. Total time and average time are for those same{" "}
+        {QUALIFICATION_THRESHOLD} scoring races (the ones with the best places, not necessarily the fastest times). Athletes
+        need at least {QUALIFICATION_THRESHOLD} races to qualify; ties on points are broken by total time.
       </p>
       <FilterBar
         gender={gender}
@@ -72,8 +74,9 @@ export default function LeagueLeaderboard() {
               <th>Club</th>
               <th>Category</th>
               <th>Races</th>
-              <th>League total</th>
-              <th>League average</th>
+              <th>Points</th>
+              <th>Total time</th>
+              <th>Average time</th>
             </tr>
           </thead>
           <tbody>
@@ -86,6 +89,7 @@ export default function LeagueLeaderboard() {
                 <td>{e.club}</td>
                 <td>{e.gender !== "Unspecified" ? `${e.ageGroup ?? ""} ${e.gender}`.trim() : e.ageGroup}</td>
                 <td>{e.racesEntered}</td>
+                <td>{e.points}</td>
                 <td>{e.leagueTotalDisplay}</td>
                 <td>{e.leagueAverageDisplay}</td>
               </tr>

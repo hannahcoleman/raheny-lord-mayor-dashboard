@@ -12,15 +12,16 @@ const SCORING_LOGIC: { aspect: string; approach: string }[] = [
   },
   {
     aspect: "League leaderboard",
-    approach: "Sum of a runner's fastest 8 times out of the 13 numbered rounds. Requires 8+ races entered to qualify; lowest total wins.",
+    approach:
+      "Points = sum of a runner's best 8 finishing places (literal race-day place, not time) out of the 13 numbered rounds - lowest points total wins. Requires 8+ races entered to qualify. Total time and average time shown alongside are for those same 8 scoring races (the best-placed ones, which may not be the same 8 as the fastest times). Ties on points are broken by total time.",
   },
   {
     aspect: "League average",
-    approach: "League total divided by 8, shown for information only - ranking is always by League total, never by average.",
+    approach: "Total time (for the 8 scoring races) divided by 8, shown for information only - ranking is always by points, never by time or average.",
   },
   {
     aspect: "Series positions",
-    approach: "Top 3 men, top 3 women, and each age-category winner, by League total, restricted to qualified (8+ race) runners.",
+    approach: "Top 3 men, top 3 women, and each age-category winner, by League points, restricted to qualified (8+ race) runners.",
   },
   {
     aspect: "Juvenile category",
