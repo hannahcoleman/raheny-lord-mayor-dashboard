@@ -58,8 +58,20 @@ export default function RunnerProfile() {
           <h3 style={{ margin: "0.4rem 0 0" }}>
             {profile.league?.qualified
               ? profile.league.leagueTotalDisplay
-              : `${profile.league?.racesEntered ?? 0} of ${QUALIFICATION_THRESHOLD}`}
+              : profile.league?.eligible === false
+                ? "Not eligible"
+                : `${profile.league?.racesEntered ?? 0} of ${QUALIFICATION_THRESHOLD}`}
           </h3>
+          {profile.league?.qualified && (
+            <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", opacity: 0.7 }}>
+              avg {profile.league.leagueAverageDisplay}
+            </p>
+          )}
+          {profile.league?.eligible === false && (
+            <p style={{ margin: "0.2rem 0 0", fontSize: "0.85rem", opacity: 0.7 }}>
+              {profile.league.racesEntered} of {QUALIFICATION_THRESHOLD} - too few rounds remain
+            </p>
+          )}
         </div>
       </div>
 
