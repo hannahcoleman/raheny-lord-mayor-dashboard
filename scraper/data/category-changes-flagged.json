@@ -61,6 +61,11 @@
         "roundNumber": 8,
         "raceName": "Round 8 - John Fennell Cup",
         "category": "O/35 Men"
+      },
+      {
+        "roundNumber": 9,
+        "raceName": "Round 9",
+        "category": "O/35 Men"
       }
     ]
   },
@@ -90,6 +95,11 @@
       {
         "roundNumber": 8,
         "raceName": "Round 8 - John Fennell Cup",
+        "category": "O/40 Women"
+      },
+      {
+        "roundNumber": 9,
+        "raceName": "Round 9",
         "category": "O/40 Women"
       }
     ]
