@@ -10,14 +10,14 @@ import {
   numberedRecords,
   racePlacementKey,
 } from "../lib/scoring";
-import type { AgeGroup, Gender } from "../lib/types";
+import type { AgeGroup, GenderFilter } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
 
 export default function WeeklyResults() {
   const { round: roundParam } = useParams();
   const { records, juvenileGenders, loading, error } = useDataset();
-  const [gender, setGender] = useState<Gender | "">("");
+  const [gender, setGender] = useState<GenderFilter | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
   const [search, setSearch] = useState("");
@@ -53,7 +53,7 @@ export default function WeeklyResults() {
 
   const searchLower = search.trim().toLowerCase();
   const raceRecords = roundRecords
-    .filter((r) => !gender || r.gender === gender)
+    .filter((r) => !gender || (gender === "Juvenile" ? r.ageGroup === "Juvenile" : r.gender === gender))
     .filter((r) => !ageGroup || r.ageGroup === ageGroup)
     .filter((r) => !club || r.club === club)
     .filter((r) => !searchLower || r.name.toLowerCase().includes(searchLower))

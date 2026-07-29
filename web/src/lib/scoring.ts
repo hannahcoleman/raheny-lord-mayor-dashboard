@@ -3,6 +3,7 @@ import {
   QUALIFICATION_THRESHOLD,
   type AgeGroup,
   type Gender,
+  type GenderFilter,
   type ResultRecord,
 } from "./types";
 
@@ -51,7 +52,7 @@ export interface OverallLeaderboardEntry {
 }
 
 export interface OverallFilter {
-  gender?: Gender;
+  gender?: GenderFilter;
   ageGroup?: AgeGroup;
   club?: string;
 }
@@ -59,7 +60,8 @@ export interface OverallFilter {
 /** Best single time per runner across all numbered races entered. No qualification threshold. */
 export function getOverallLeaderboard(records: ResultRecord[], filter?: OverallFilter): OverallLeaderboardEntry[] {
   let pool = runnerRecords(numberedRecords(records)).filter((r) => r.timeSeconds !== null);
-  if (filter?.gender) pool = pool.filter((r) => r.gender === filter.gender);
+  if (filter?.gender === "Juvenile") pool = pool.filter((r) => r.ageGroup === "Juvenile");
+  else if (filter?.gender) pool = pool.filter((r) => r.gender === filter.gender);
   if (filter?.ageGroup) pool = pool.filter((r) => r.ageGroup === filter.ageGroup);
   if (filter?.club) pool = pool.filter((r) => r.club === filter.club);
 
@@ -87,12 +89,13 @@ export function getClubs(records: ResultRecord[]): string[] {
   return Array.from(clubs).sort((a, b) => a.localeCompare(b));
 }
 
-/** Men/Women only present if at least one runner in the dataset has that gender. */
-export function getAvailableGenders(records: ResultRecord[]): Gender[] {
+/** Men/Women/Juvenile only present if at least one runner in the dataset falls into that group. */
+export function getAvailableGenders(records: ResultRecord[]): GenderFilter[] {
   const pool = runnerRecords(numberedRecords(records));
-  const options: Gender[] = [];
+  const options: GenderFilter[] = [];
   if (pool.some((r) => r.gender === "Men")) options.push("Men");
   if (pool.some((r) => r.gender === "Women")) options.push("Women");
+  if (pool.some((r) => r.ageGroup === "Juvenile")) options.push("Juvenile");
   return options;
 }
 

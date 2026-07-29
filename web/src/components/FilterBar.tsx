@@ -1,13 +1,13 @@
-import type { AgeGroup, Gender } from "../lib/types";
+import type { AgeGroup, GenderFilter } from "../lib/types";
 
 export interface FilterBarProps {
-  gender: Gender | "";
-  onGenderChange: (v: Gender | "") => void;
+  gender: GenderFilter | "";
+  onGenderChange: (v: GenderFilter | "") => void;
   ageGroup: AgeGroup | "";
   onAgeGroupChange: (v: AgeGroup | "") => void;
   club: string;
   onClubChange: (v: string) => void;
-  genders: Gender[];
+  genders: GenderFilter[];
   ageGroups: AgeGroup[];
   clubs: string[];
 }
@@ -25,7 +25,7 @@ export default function FilterBar({
 }: FilterBarProps) {
   return (
     <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-      <select value={gender} onChange={(e) => onGenderChange(e.target.value as Gender | "")}>
+      <select value={gender} onChange={(e) => onGenderChange(e.target.value as GenderFilter | "")}>
         <option value="">All genders</option>
         {genders.map((g) => (
           <option key={g} value={g}>

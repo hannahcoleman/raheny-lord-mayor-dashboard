@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { useDataset } from "../lib/useDataset";
 import { getAvailableAgeGroups, getAvailableGenders, getClubs, getLeagueLeaderboard } from "../lib/scoring";
-import { QUALIFICATION_THRESHOLD, type AgeGroup, type Gender } from "../lib/types";
+import { QUALIFICATION_THRESHOLD, type AgeGroup, type GenderFilter } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
 
 export default function LeagueLeaderboard() {
   const { records, loading, error } = useDataset();
-  const [gender, setGender] = useState<Gender | "">("");
+  const [gender, setGender] = useState<GenderFilter | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
   const [search, setSearch] = useState("");
@@ -19,7 +19,10 @@ export default function LeagueLeaderboard() {
   const filtered = useMemo(
     () =>
       league.filter(
-        (e) => (!gender || e.gender === gender) && (!ageGroup || e.ageGroup === ageGroup) && (!club || e.club === club)
+        (e) =>
+          (!gender || (gender === "Juvenile" ? e.ageGroup === "Juvenile" : e.gender === gender)) &&
+          (!ageGroup || e.ageGroup === ageGroup) &&
+          (!club || e.club === club)
       ),
     [league, gender, ageGroup, club]
   );

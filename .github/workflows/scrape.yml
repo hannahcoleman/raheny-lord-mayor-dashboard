@@ -2,6 +2,8 @@ name: Weekly data refresh
 
 on:
   schedule:
+    # 04:00 UTC = 05:00 Irish time (BST is in effect for this whole window)
+    - cron: '0 4 * * 3'
     # 08:00 UTC = 09:00 Irish time (BST is in effect for this whole window)
     - cron: '0 8 * * 3'
   workflow_dispatch:

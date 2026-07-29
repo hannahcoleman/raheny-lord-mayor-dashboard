@@ -2,13 +2,13 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDataset } from "../lib/useDataset";
 import { getAvailableAgeGroups, getAvailableGenders, getClubs, getOverallLeaderboard } from "../lib/scoring";
-import type { AgeGroup, Gender } from "../lib/types";
+import type { AgeGroup, GenderFilter } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 import FilterBar from "../components/FilterBar";
 
 export default function OverallLeaderboard() {
   const { records, loading, error } = useDataset();
-  const [gender, setGender] = useState<Gender | "">("");
+  const [gender, setGender] = useState<GenderFilter | "">("");
   const [ageGroup, setAgeGroup] = useState<AgeGroup | "">("");
   const [club, setClub] = useState<string>("");
   const [search, setSearch] = useState("");

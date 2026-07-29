@@ -1,5 +1,13 @@
 export type Gender = "Men" | "Women" | "Unspecified";
 
+/**
+ * Gender-filter UI value. Juvenile records always have gender "Unspecified"
+ * in the source data (see ageGroup instead), but "Juvenile" is offered
+ * alongside Men/Women in the gender filter for discoverability - selecting
+ * it filters by ageGroup === "Juvenile", not by the gender field.
+ */
+export type GenderFilter = Gender | "Juvenile";
+
 export type AgeGroup =
   | "Senior"
   | "O/35"

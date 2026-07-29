@@ -29,7 +29,7 @@ export default function SeriesPositions() {
         <ol>
           {positions.topMen.map((e) => (
             <li key={e.name}>
-              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay}
+              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay} (avg {e.leagueAverageDisplay})
             </li>
           ))}
         </ol>
@@ -40,7 +40,7 @@ export default function SeriesPositions() {
         <ol>
           {positions.topWomen.map((e) => (
             <li key={e.name}>
-              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay}
+              <RunnerLink name={e.name} /> — {e.leagueTotalDisplay} (avg {e.leagueAverageDisplay})
             </li>
           ))}
         </ol>
@@ -54,6 +54,7 @@ export default function SeriesPositions() {
               <th>Category</th>
               <th>Winner</th>
               <th>League total</th>
+              <th>Average time</th>
             </tr>
           </thead>
           <tbody>
@@ -66,6 +67,7 @@ export default function SeriesPositions() {
                   <RunnerLink name={c.winner.name} />
                 </td>
                 <td>{c.winner.leagueTotalDisplay}</td>
+                <td>{c.winner.leagueAverageDisplay}</td>
               </tr>
             ))}
             {positions.juvenileWinner && (
@@ -75,6 +77,7 @@ export default function SeriesPositions() {
                   <RunnerLink name={positions.juvenileWinner.name} />
                 </td>
                 <td>{positions.juvenileWinner.leagueTotalDisplay}</td>
+                <td>{positions.juvenileWinner.leagueAverageDisplay}</td>
               </tr>
             )}
           </tbody>
