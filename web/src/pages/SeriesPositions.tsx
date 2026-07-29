@@ -52,7 +52,7 @@ export default function SeriesPositions() {
           <thead>
             <tr>
               <th>Category</th>
-              <th>Winner</th>
+              <th>Leader</th>
               <th>League total</th>
               <th>Average time</th>
             </tr>
