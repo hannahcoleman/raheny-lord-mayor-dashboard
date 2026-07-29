@@ -31,10 +31,12 @@ export default function LeagueLeaderboard() {
   if (error) return <p>Could not load data: {error}</p>;
 
   const qualified = filtered.filter((e) => e.qualified).map((e, i) => ({ ...e, rank: i + 1 }));
-  const unqualified = filtered.filter((e) => !e.qualified);
+  const unqualified = filtered.filter((e) => !e.qualified && e.eligible);
+  const ineligible = filtered.filter((e) => !e.qualified && !e.eligible);
   const searchLower = search.trim().toLowerCase();
   const visibleQualified = qualified.filter((e) => e.name.toLowerCase().includes(searchLower));
   const visibleUnqualified = unqualified.filter((e) => e.name.toLowerCase().includes(searchLower));
+  const visibleIneligible = ineligible.filter((e) => e.name.toLowerCase().includes(searchLower));
 
   return (
     <div>
@@ -130,6 +132,42 @@ export default function LeagueLeaderboard() {
           </tbody>
         </table>
       </div>
+
+      {visibleIneligible.length > 0 && (
+        <>
+          <h3>Not eligible for League</h3>
+          <p>
+            Too few rounds remain this season for these athletes to reach the {QUALIFICATION_THRESHOLD}-race threshold,
+            even if they ran every remaining round.
+          </p>
+          <div className="card" style={{ padding: 0 }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Club</th>
+                  <th>Category</th>
+                  <th>Races entered</th>
+                  <th>Max possible</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleIneligible.map((e) => (
+                  <tr key={e.name}>
+                    <td>
+                      <RunnerLink name={e.name} />
+                    </td>
+                    <td>{e.club}</td>
+                    <td>{e.gender !== "Unspecified" ? `${e.ageGroup ?? ""} ${e.gender}`.trim() : e.ageGroup}</td>
+                    <td>{e.racesEntered}</td>
+                    <td>{e.maxPossibleRaces} of {QUALIFICATION_THRESHOLD}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }
