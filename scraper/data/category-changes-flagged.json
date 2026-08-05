@@ -25,6 +25,56 @@
     ]
   },
   {
+    "name": "Ellen Jacob",
+    "occurrences": [
+      {
+        "roundNumber": 1,
+        "raceName": "Round 1",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 2,
+        "raceName": "Round 2",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 3,
+        "raceName": "Round 3",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 5,
+        "raceName": "Round 5",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 6,
+        "raceName": "Round 6",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 7,
+        "raceName": "Round 7",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 8,
+        "raceName": "Round 8 - John Fennell Cup",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 9,
+        "raceName": "Round 9",
+        "category": "O/35 Women"
+      },
+      {
+        "roundNumber": 10,
+        "raceName": "Round 10",
+        "category": "Senior Women"
+      }
+    ]
+  },
+  {
     "name": "Josh Jaoob",
     "occurrences": [
       {
@@ -66,6 +116,11 @@
         "roundNumber": 9,
         "raceName": "Round 9",
         "category": "O/35 Men"
+      },
+      {
+        "roundNumber": 10,
+        "raceName": "Round 10",
+        "category": "O/35 Men"
       }
     ]
   },
@@ -100,6 +155,11 @@
       {
         "roundNumber": 9,
         "raceName": "Round 9",
+        "category": "O/40 Women"
+      },
+      {
+        "roundNumber": 10,
+        "raceName": "Round 10",
         "category": "O/40 Women"
       }
     ]
