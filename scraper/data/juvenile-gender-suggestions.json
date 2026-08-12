@@ -1,20 +1,4 @@
 {
-  "suggestions": [
-    {
-      "name": "Evie O'Connor",
-      "suggestedGender": "Women"
-    },
-    {
-      "name": "Mia McArdle",
-      "suggestedGender": "Women"
-    },
-    {
-      "name": "Robert Brennan",
-      "suggestedGender": "Men"
-    }
-  ],
-  "unmatched": [
-    "Joel Thomas",
-    "Sam Manning"
-  ]
+  "suggestions": [],
+  "unmatched": []
 }

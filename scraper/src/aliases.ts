@@ -37,6 +37,13 @@ export interface AliasSuggestion {
  * among names not already covered by an existing alias entry. Purely
  * advisory - never auto-applied. Human reviews and adds confirmed merges
  * to aliases.json.
+ *
+ * Only compares pairs sharing an exact first name or an exact last name -
+ * a typo in the *other* name still keeps the full-name edit distance small
+ * (e.g. "Evie Clark" vs "Evie Clarke": same first name, 1-letter surname
+ * typo), while two unrelated people who happen to share neither never get
+ * compared at all, keeping this from turning into noisy full-name fuzzy
+ * matching across the whole roster.
  */
 export function suggestAliases(names: string[], aliases: AliasMap): AliasSuggestion[] {
   const canonicalized = new Set(names.map((n) => applyAlias(n, aliases)));
@@ -47,9 +54,13 @@ export function suggestAliases(names: string[], aliases: AliasMap): AliasSuggest
     for (let j = i + 1; j < distinct.length; j++) {
       const a = distinct[i];
       const b = distinct[j];
+      const firstA = a.split(" ")[0] ?? "";
+      const firstB = b.split(" ")[0] ?? "";
       const lastA = a.split(" ").pop() ?? "";
       const lastB = b.split(" ").pop() ?? "";
-      if (lastA.toLowerCase() !== lastB.toLowerCase()) continue; // only compare same-surname pairs
+      const sameFirstName = firstA.toLowerCase() === firstB.toLowerCase();
+      const sameSurname = lastA.toLowerCase() === lastB.toLowerCase();
+      if (!sameFirstName && !sameSurname) continue; // only compare names sharing a first or last name
       const distance = levenshtein(a.toLowerCase(), b.toLowerCase());
       if (distance > 0 && distance <= 2) {
         suggestions.push({ a, b, distance });
