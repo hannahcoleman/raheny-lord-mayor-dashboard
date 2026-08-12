@@ -66,5 +66,39 @@
         "category": "Juvenile"
       }
     ]
+  },
+  {
+    "roundNumber": 11,
+    "raceName": "Round 11",
+    "name": "Joel Thomas",
+    "occurrences": [
+      {
+        "place": 7,
+        "timeDisplay": "12:30",
+        "category": "Juvenile"
+      },
+      {
+        "place": 23,
+        "timeDisplay": "13:40",
+        "category": "Juvenile"
+      }
+    ]
+  },
+  {
+    "roundNumber": 11,
+    "raceName": "Round 11",
+    "name": "Fergal O'Dwyer",
+    "occurrences": [
+      {
+        "place": 10,
+        "timeDisplay": "12:49",
+        "category": "O/60 Men"
+      },
+      {
+        "place": 37,
+        "timeDisplay": "15:10",
+        "category": "O/60 Men"
+      }
+    ]
   }
 ]

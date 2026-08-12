@@ -1,5 +1,20 @@
 [
   {
+    "name": "Davy Byrne",
+    "occurrences": [
+      {
+        "roundNumber": 10,
+        "raceName": "Round 10",
+        "category": "O/70 Women"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
+        "category": "O/70 Men"
+      }
+    ]
+  },
+  {
     "name": "Elaine McNulty",
     "occurrences": [
       {
@@ -20,6 +35,11 @@
       {
         "roundNumber": 5,
         "raceName": "Round 5",
+        "category": "O/45 Women"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
         "category": "O/45 Women"
       }
     ]
@@ -71,6 +91,11 @@
         "roundNumber": 10,
         "raceName": "Round 10",
         "category": "Senior Women"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
+        "category": "Senior Women"
       }
     ]
   },
@@ -121,6 +146,26 @@
         "roundNumber": 10,
         "raceName": "Round 10",
         "category": "O/35 Men"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
+        "category": "O/35 Men"
+      }
+    ]
+  },
+  {
+    "name": "Matt Cranley",
+    "occurrences": [
+      {
+        "roundNumber": 3,
+        "raceName": "Round 3",
+        "category": "O/45 Men"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
+        "category": "O/40 Men"
       }
     ]
   },
@@ -160,6 +205,11 @@
       {
         "roundNumber": 10,
         "raceName": "Round 10",
+        "category": "O/40 Women"
+      },
+      {
+        "roundNumber": 11,
+        "raceName": "Round 11",
         "category": "O/40 Women"
       }
     ]
