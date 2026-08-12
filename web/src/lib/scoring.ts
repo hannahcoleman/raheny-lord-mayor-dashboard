@@ -196,14 +196,25 @@ export interface SeriesPositions {
 /**
  * Series prizes: top 3 men, top 3 women, and each age-category winner, all
  * restricted to qualified (8+ race) athletes. Juvenile has no gender split
- * in the source data, so per user decision it's one combined winner rather
- * than a Men's/Women's Juvenile split.
+ * in the source data, so per user decision it always gets its own combined
+ * winner rather than a Men's/Women's Juvenile split - but a Juvenile whose
+ * gender has been confirmed (juvenileGenders, the same human-curated map
+ * used for the per-race Overall Podium) is now also eligible for the
+ * season-long Top 3 Men/Women, same as everyone else, in *addition* to the
+ * combined Juvenile award - no exclusion between the two, matching how an
+ * age-category winner isn't excluded from Top 3 either.
  */
-export function getSeriesPositions(league: LeagueLeaderboardEntry[]): SeriesPositions {
+export function getSeriesPositions(
+  league: LeagueLeaderboardEntry[],
+  juvenileGenders: Record<string, Gender> = {}
+): SeriesPositions {
   const qualified = league.filter((e) => e.qualified);
 
-  const men = qualified.filter((e) => e.gender === "Men" && e.ageGroup !== "Juvenile");
-  const women = qualified.filter((e) => e.gender === "Women" && e.ageGroup !== "Juvenile");
+  const effectiveGender = (e: LeagueLeaderboardEntry): Gender =>
+    e.ageGroup === "Juvenile" ? (juvenileGenders[e.name] ?? e.gender) : e.gender;
+
+  const men = qualified.filter((e) => effectiveGender(e) === "Men");
+  const women = qualified.filter((e) => effectiveGender(e) === "Women");
 
   const ageCategoryWinners: SeriesPositions["ageCategoryWinners"] = [];
   for (const ageGroup of ADULT_AGE_GROUPS) {

@@ -5,8 +5,11 @@ import { QUALIFICATION_THRESHOLD } from "../lib/types";
 import RunnerLink from "../components/RunnerLink";
 
 export default function SeriesPositions() {
-  const { records, loading, error } = useDataset();
-  const positions = useMemo(() => getSeriesPositions(getLeagueLeaderboard(records)), [records]);
+  const { records, juvenileGenders, loading, error } = useDataset();
+  const positions = useMemo(
+    () => getSeriesPositions(getLeagueLeaderboard(records), juvenileGenders),
+    [records, juvenileGenders]
+  );
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Could not load data: {error}</p>;
