@@ -11,6 +11,11 @@
         "roundNumber": 11,
         "raceName": "Round 11",
         "category": "O/70 Men"
+      },
+      {
+        "roundNumber": 12,
+        "raceName": "Round 12",
+        "category": "O/70 Men"
       }
     ]
   },
@@ -40,6 +45,11 @@
       {
         "roundNumber": 11,
         "raceName": "Round 11",
+        "category": "O/45 Women"
+      },
+      {
+        "roundNumber": 12,
+        "raceName": "Round 12",
         "category": "O/45 Women"
       }
     ]
@@ -96,6 +106,11 @@
         "roundNumber": 11,
         "raceName": "Round 11",
         "category": "Senior Women"
+      },
+      {
+        "roundNumber": 12,
+        "raceName": "Round 12",
+        "category": "Senior Women"
       }
     ]
   },
@@ -150,6 +165,11 @@
       {
         "roundNumber": 11,
         "raceName": "Round 11",
+        "category": "O/35 Men"
+      },
+      {
+        "roundNumber": 12,
+        "raceName": "Round 12",
         "category": "O/35 Men"
       }
     ]
