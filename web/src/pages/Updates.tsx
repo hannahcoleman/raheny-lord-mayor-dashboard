@@ -4,6 +4,7 @@ import { QUALIFICATION_THRESHOLD } from "../lib/types";
 
 const ADMIN_PASSWORD_HASH = "c55ecb65733d09b012bdfb2bd943ec14c1e8c4845d4bf8d782db774e3cdebeec";
 const WORKFLOW_URL = "https://github.com/hannahcoleman/raheny-lord-mayor-dashboard/actions/workflows/scrape.yml";
+const RECONCILIATION_URL = "https://claude.ai/code/artifact/79265945-b78f-4bc7-b109-67c266f21964";
 
 const SCORING_LOGIC: { aspect: string; approach: string }[] = [
   { aspect: "Course distance", approach: "2 miles per race (fixed) - used to compute pace/mile and pace/km on runner profiles." },
@@ -235,6 +236,19 @@ export default function Updates() {
             </p>
             <a className="btn" href={WORKFLOW_URL} target="_blank" rel="noreferrer">
               Open GitHub Actions to Run Refresh
+            </a>
+          </div>
+
+          <div className="card">
+            <h3>Reconciliation Notes</h3>
+            <p>
+              Row-by-row check of this dashboard's League standings against the club's own official post-Round-12
+              write-up (57 qualified athletes, men and women) - what matched exactly, what's explained by an
+              already-flagged duplicate, and what's still an open discrepancy. A point-in-time snapshot, not
+              auto-updating.
+            </p>
+            <a className="btn" href={RECONCILIATION_URL} target="_blank" rel="noreferrer">
+              Open Reconciliation
             </a>
           </div>
 
