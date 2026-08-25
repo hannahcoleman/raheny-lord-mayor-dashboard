@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDataset } from "../lib/useDataset";
+import { QUALIFICATION_THRESHOLD } from "../lib/types";
 
 const ADMIN_PASSWORD_HASH = "c55ecb65733d09b012bdfb2bd943ec14c1e8c4845d4bf8d782db774e3cdebeec";
 const WORKFLOW_URL = "https://github.com/hannahcoleman/raheny-lord-mayor-dashboard/actions/workflows/scrape.yml";
@@ -12,16 +13,15 @@ const SCORING_LOGIC: { aspect: string; approach: string }[] = [
   },
   {
     aspect: "League leaderboard",
-    approach:
-      "Points = sum of a runner's best 8 finishing places (literal race-day place, not time) out of the 13 numbered rounds - lowest points total wins. Requires 8+ races entered to qualify. Total time and average time shown alongside are for those same 8 scoring races (the best-placed ones, which may not be the same 8 as the fastest times). Ties on points are broken by total time.",
+    approach: `Points = sum of a runner's best ${QUALIFICATION_THRESHOLD} finishing places (literal race-day place, not time) out of the 13 numbered rounds - lowest points total wins. Requires ${QUALIFICATION_THRESHOLD}+ races entered to qualify. Total time and average time shown alongside are for those same ${QUALIFICATION_THRESHOLD} scoring races (the best-placed ones, which may not be the same ${QUALIFICATION_THRESHOLD} as the fastest times). Ties on points are broken by total time.`,
   },
   {
     aspect: "League average",
-    approach: "Total time (for the 8 scoring races) divided by 8, shown for information only - ranking is always by points, never by time or average.",
+    approach: `Total time (for the ${QUALIFICATION_THRESHOLD} scoring races) divided by ${QUALIFICATION_THRESHOLD}, shown for information only - ranking is always by points, never by time or average.`,
   },
   {
     aspect: "Series positions",
-    approach: "Top 3 men, top 3 women, and each age-category winner, by League points, restricted to qualified (8+ race) runners.",
+    approach: `Top 3 men, top 3 women, and each age-category winner, by League points, restricted to qualified (${QUALIFICATION_THRESHOLD}+ race) runners.`,
   },
   {
     aspect: "Juvenile category",

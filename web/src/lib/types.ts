@@ -65,7 +65,7 @@ export interface CategoryChangeFlag {
 }
 
 export const NUMBERED_ROUNDS_TOTAL = 13;
-export const QUALIFICATION_THRESHOLD = 8;
+export const QUALIFICATION_THRESHOLD = 7;
 
 export const ADULT_AGE_GROUPS: AgeGroup[] = [
   "Senior",

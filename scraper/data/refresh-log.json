@@ -1,5 +1,24 @@
 [
   {
+    "timestamp": "2026-08-25T06:55:13.352Z",
+    "roundsScraped": 12,
+    "newRaces": [],
+    "changedRaces": [
+      "Round 1",
+      "Round 2",
+      "Round 3",
+      "Round 4 - Tommy Lynam Cup",
+      "Round 5",
+      "Round 6",
+      "Round 7",
+      "Round 8 - John Fennell Cup",
+      "Round 9",
+      "Round 10",
+      "Round 11",
+      "Round 12"
+    ]
+  },
+  {
     "timestamp": "2026-08-19T08:38:17.872Z",
     "roundsScraped": 12,
     "newRaces": [],

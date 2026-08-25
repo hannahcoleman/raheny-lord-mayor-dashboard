@@ -130,15 +130,16 @@ function formatSeconds(total: number): string {
 }
 
 /**
- * Points = sum of each qualifying athlete's best-8-of-13 finishing PLACES
- * (literal race-day place, lowest wins) - the club's own historical scoring
- * method, confirmed from its 2025 season write-ups. Total/average time are
- * derived from those same 8 scoring races (the ones with the best places),
- * not independently from the 8 fastest times - the two selections can differ.
- * Ties on points are broken by total time. Athletes under 8 races are still
- * returned, unranked, with progress info - unless the remaining rounds in the
- * season are too few for them to reach 8 races even if they ran every one of
- * them, in which case they're marked ineligible.
+ * Points = sum of each qualifying athlete's best-QUALIFICATION_THRESHOLD-of-13
+ * finishing PLACES (literal race-day place, lowest wins) - the club's own
+ * historical scoring method, confirmed from its 2025 season write-ups.
+ * Total/average time are derived from those same scoring races (the ones
+ * with the best places), not independently from the fastest times - the two
+ * selections can differ. Ties on points are broken by total time. Athletes
+ * under the threshold are still returned, unranked, with progress info -
+ * unless the remaining rounds in the season are too few for them to reach it
+ * even if they ran every one of them, in which case they're marked
+ * ineligible.
  */
 export function getLeagueLeaderboard(records: ResultRecord[]): LeagueLeaderboardEntry[] {
   const pool = runnerRecords(numberedRecords(records)).filter((r) => r.timeSeconds !== null);
@@ -195,7 +196,7 @@ export interface SeriesPositions {
 
 /**
  * Series prizes: top 3 men, top 3 women, and each age-category winner, all
- * restricted to qualified (8+ race) athletes. Juvenile has no gender split
+ * restricted to qualified athletes (QUALIFICATION_THRESHOLD+ races). Juvenile has no gender split
  * in the source data, so per user decision it always gets its own combined
  * winner rather than a Men's/Women's Juvenile split - but a Juvenile whose
  * gender has been confirmed (juvenileGenders, the same human-curated map
