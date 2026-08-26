@@ -1,5 +1,13 @@
 [
   {
+    "timestamp": "2026-08-26T04:32:47.160Z",
+    "roundsScraped": 13,
+    "newRaces": [
+      "Round 13"
+    ],
+    "changedRaces": []
+  },
+  {
     "timestamp": "2026-08-25T06:55:13.352Z",
     "roundsScraped": 12,
     "newRaces": [],
